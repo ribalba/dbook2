@@ -1,11 +1,20 @@
+/*
+ * DBOOK2
+ * $Id$
+ * -----------------------
+ * The header file for the lib 
+ */
+
 #define DBOOK_TRUE 0
 #define DBOOK_FALSE 1
 
 #define DBOOK_ISBN char
 #define DBOOK_ISBN_LEN 13
 
+typedef DBOOK_ISBN dbook_isbn[DBOOK_ISBN_LEN] ;
+
 typedef struct dbook_config_{
-    char *server;
+    char server[50];
 }dbook_config;
 
 typedef struct dbook_book_{
