@@ -48,6 +48,13 @@ int main(void) {
 	ret = dbook_get_isbn_details(i3, &b1);
 	printf("returned: %d\n\n", ret);
 
+	ret = dbook_is_isbn_13("9780593054277");
+    /*if (e!= 0) {
+        printf("ERROR in dbook_sanitize test2\n");
+    }*/
+	printf("returned: %d\n\n", ret);
+
+
 /*	printf("dbook_configure()...\n");
 	ret = dbook_configure(&c1);
 	printf("returned: %d\n\n", ret);
