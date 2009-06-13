@@ -7,7 +7,7 @@ OBJS = main.o Logic.o XSocket.o
 
 LD = g++
 CLFLAGS = 
-SLFLAGS = -L./lib -I./include
+SLFLAGS = -L../../libdbook/src -I../../libdbook/src
 
 all: $(CPPS) dbookd
 
