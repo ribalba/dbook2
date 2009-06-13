@@ -15,7 +15,7 @@ all: $(CPPS) dbookd
 	$(LD) $(CLFLAGS) $(SLFLAGS) -c $<
 
 dbookd: $(OBJS)
-	$(LD) -o ../bin/dbookd.exe $(OBJS) $(CPPOFDB) $(SLFLAGS)
+	$(LD) -o ../bin/dbookd $(OBJS) $(CPPOFDB) $(SLFLAGS)
 
 help:
 	@echo "dbookd Makefile"
@@ -33,4 +33,4 @@ clean_o:
 	rm *.o
 
 clean:
-	rm *.o ../bin/dbookd.exe
+	rm *.o ../bin/dbookd*
