@@ -1,8 +1,15 @@
+/*
+ * DBOOK2
+ * $Id$
+ * -----------------------
+ * 
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include "libdbook.h"
 
-dbook_config *configuration;
+char serverToTalkTo[50];
 
 int dbook_check_isbn(DBOOK_ISBN *isbnToCheck){
     return DBOOK_TRUE;
@@ -33,11 +40,11 @@ int dbook_get_isbn_details(DBOOK_ISBN *whichBook, dbook_book *book){
 }
 
 int dbook_configure(dbook_config *config){
-    configuration = config;
+    strcpy(serverToTalkTo, config->server);
     return DBOOK_TRUE;
 }
 
 int dbook_get_config(dbook_config *config){
-    config = configuration;
+    strcpy(config->server, serverToTalkTo);
     return DBOOK_TRUE;
 }
