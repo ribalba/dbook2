@@ -130,7 +130,7 @@ void* xListenThread(void* xSocket)
 
   while(true)
   {
-    newsockfd = accept(((XSocket*)xSocket)->sockfd, (struct sockaddr *) &cli_addr, (socklen_t*)&clilen);
+    newsockfd = accept(((XSocket*)xSocket)->sockfd, (struct sockaddr *)&cli_addr, (socklen_t*)&clilen);
     ((XSocket*)xSocket)->parent->xConnectionRequest(newsockfd);
   }
 }
