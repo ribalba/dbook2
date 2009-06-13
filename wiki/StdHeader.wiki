@@ -1,0 +1,17 @@
+# Standard Header for Source Code
+
+= Introduction =
+
+Please put this header as the first lines in your sources:
+
+
+= Details =
+
+{{{
+/*
+ * DBOOK2
+ * $Id$
+ * -----------------------
+ * libdbook test stub
+ */
+}}}
