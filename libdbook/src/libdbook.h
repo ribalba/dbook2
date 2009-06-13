@@ -34,11 +34,11 @@ typedef struct dbook_book_{
 
 int dbook_check_isbn(DBOOK_ISBN *isbnToCheck);
 
-int dbook_10_to_13(DBOOK_ISBN *from, DBOOK_ISBN *to);
+int dbook_isbn_10_to_13(DBOOK_ISBN *from, DBOOK_ISBN *to);
 
-int dbook_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to);
+int dbook_isbn_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to);
 
-int dbook_sanatize(char *from, DBOOK_ISBN *to);
+int dbook_sanitize(char *from, DBOOK_ISBN *to);
 
 int dbook_get_isbn_details(DBOOK_ISBN *whichBook, dbook_book *book);
 
