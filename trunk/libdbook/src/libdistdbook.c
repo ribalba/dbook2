@@ -1,18 +1,12 @@
 /*
- * DBOOK2
  * $Id$
  * -----------------------
- * 
+ * The distributed dbook thing
  */
 
 #include <stdio.h>
 #include <string.h>
 #include "libdbook.h"
-#include "liblocaldbook.c"
-
-char serverToTalkTo[50];
-int onlineMode = DBOOK_FALSE;
-
 
 int dbook_check_isbn(DBOOK_ISBN *isbnToCheck){
     return DBOOK_TRUE;
@@ -29,12 +23,7 @@ int dbook_isbn_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to){
 }
 
 int dbook_sanitize(char *from, DBOOK_ISBN *to){
-    if (onlineMode == DBOOK_FALSE){
-        dbook_sanitize_loc(from, to);
-    }else{
-        ;
-    }
-
+    to = "9780091906122";
     return DBOOK_TRUE;
 }
 
