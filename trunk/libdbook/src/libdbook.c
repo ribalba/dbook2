@@ -15,17 +15,17 @@ int dbook_check_isbn(DBOOK_ISBN *isbnToCheck){
     return DBOOK_TRUE;
 }
 
-int dbook_10_to_13(DBOOK_ISBN *from, DBOOK_ISBN *to){
+int dbook_isbn_10_to_13(DBOOK_ISBN *from, DBOOK_ISBN *to){
     to = "9780091906122";
     return DBOOK_TRUE;
 }
 
-int dbook_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to){
+int dbook_isbn_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to){
     to = "0091906121";
     return DBOOK_TRUE;
 }
 
-int dbook_sanatize(char *from, DBOOK_ISBN *to){
+int dbook_sanitize(char *from, DBOOK_ISBN *to){
     to = "9780091906122";
     return DBOOK_TRUE;
 }
