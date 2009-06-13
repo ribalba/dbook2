@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <yaml.h>
 #include <libdbook.h>
 #include "XSocket.h"
 

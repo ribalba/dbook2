@@ -34,9 +34,18 @@ void Logic::xConnectionRequest(int sockfd)
 
 void Logic::xDataReceived(string data)
 {
+  YAML::Emitter yaml;
+
   //cout << "\b\b" << "Data Received: " << data << endl;
   //cout << "> ";
   //flush(cout);
+
+  yaml << YAML::BeginSeq;
+  yaml << "eggs";
+  yaml << "bread";
+  yaml << "milk";
+  yaml << YAML::EndSeq;
+  cout << yaml.c_str() << endl;
 }
 
 void Logic::xConnected()
