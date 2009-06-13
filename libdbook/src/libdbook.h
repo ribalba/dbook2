@@ -15,8 +15,10 @@ typedef DBOOK_ISBN dbook_isbn[DBOOK_ISBN_LEN] ;
 
 typedef struct dbook_config_{
     char server[50];
+    int serverMode;   
     int debug;
 }dbook_config;
+
 
 typedef struct dbook_book_{
     DBOOK_ISBN isbn[DBOOK_ISBN_LEN];
@@ -26,7 +28,7 @@ typedef struct dbook_book_{
     char publisher[250];
     int  edition;
     int  pagecount;
-    char image_pic[250];
+    char image_path[250];
     char category[250];
     char url[250];
     char booktype[50];
