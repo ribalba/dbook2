@@ -20,6 +20,9 @@ int dbook_isbn_13_to_10_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
 }
 
 int dbook_sanitize_loc(char *from, DBOOK_ISBN *to){
+    //Null everything before we do anything
+    memset(to, 0, strlen(to));
+    
     int i;
     for (i = 0; i< strlen(from); i++){
         if ( isdigit(from[i])  || from[i] == 'X' || from[i] == 'x'){
@@ -37,4 +40,17 @@ int dbook_get_isbn_details_loc(DBOOK_ISBN *whichBook, dbook_book *book){
     strcpy(book->publisher, "Ebury Press");
     return DBOOK_TRUE;
 }
+
+int dbook_is_isbn_13_loc(DBOOK_ISBN *isbnToCheck){
+    dbook_isbn retVal = "";
+    dbook_sanitize_loc(isbnToCheck, retVal);
+    return (strlen(retVal) == 13);
+}
+
+int dbook_is_isbn_10_loc(DBOOK_ISBN *isbnToCheck){
+    dbook_isbn retVal = "";
+    dbook_sanitize_loc(isbnToCheck, retVal);
+    return (strlen(retVal) == 10);
+}
+
 

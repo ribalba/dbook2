@@ -32,7 +32,7 @@ int dbook_sanitize(char *from, DBOOK_ISBN *to){
     if (onlineMode == DBOOK_FALSE){
         dbook_sanitize_loc(from, to);
     }else{
-        ;
+        //dbook_sanitize_dis(from, to);
     }
 
     return DBOOK_TRUE;
@@ -56,3 +56,24 @@ int dbook_get_config(dbook_config *config){
     strcpy(config->server, serverToTalkTo);
     return DBOOK_TRUE;
 }
+
+
+int dbook_is_isbn_13(DBOOK_ISBN *isbnToCheck){
+    if (onlineMode == DBOOK_FALSE){
+        return dbook_is_isbn_13_loc(isbnToCheck);
+    }else{
+        //dbook_sanitize_dis(from, to);
+    }
+    return DBOOK_FALSE;
+}
+
+int dbook_is_isbn_10(DBOOK_ISBN *isbnToCheck){
+    if (onlineMode == DBOOK_FALSE){
+        return dbook_is_isbn_10_loc(isbnToCheck);
+    }else{
+        //dbook_sanitize_dis(from, to);
+    }
+    return DBOOK_FALSE;
+
+}
+

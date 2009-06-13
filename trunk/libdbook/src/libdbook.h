@@ -49,3 +49,8 @@ int dbook_configure(dbook_config *config);
 
 int dbook_get_config(dbook_config *config);
 
+int dbook_is_isbn_13(DBOOK_ISBN *isbnToCheck);
+
+int dbook_is_isbn_10(DBOOK_ISBN *isbnToCheck);
+
+
