@@ -1,0 +1,18 @@
+Build instructions for libdbook:
+$Id$
+-------------------------------------------
+
+You need cmake, gcc, (g)make.
+
+Don't build over the sources:
+mkdir build && cd build
+
+Configure the sources:
+cmake ..
+
+And build:
+make
+
+-------------------------------------------
+
+TODO XXX: install targets
