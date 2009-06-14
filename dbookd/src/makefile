@@ -6,8 +6,8 @@ CPPS = main.cpp Logic.cpp XSocket.cpp
 OBJS = main.o Logic.o XSocket.o
 
 LD = g++
-CLFLAGS = 
-SLFLAGS = -L../../libdbook/build/src -L/usr/local/lib -lyaml-cpp -ldbook -I../../libdbook/src -I/usr/local/include/yaml-cpp
+CLFLAGS = -I../../libdbook/src -I/usr/local/include/yaml-cpp -L../../libdbook/build/src -L/usr/local/lib
+SLFLAGS = -lyaml-cpp -ldbook
 
 all: $(CPPS) dbookd
 
@@ -15,7 +15,7 @@ all: $(CPPS) dbookd
 	$(LD) $(CLFLAGS) $(SLFLAGS) -c $<
 
 dbookd: $(OBJS)
-	$(LD) -o ../bin/dbookd $(OBJS) $(CPPOFDB) $(SLFLAGS)
+	$(LD) -o ../bin/dbookd $(OBJS) $(CLFLAGS) $(SLFLAGS) $(CPPOFDB)
 
 help:
 	@echo "dbookd Makefile"
