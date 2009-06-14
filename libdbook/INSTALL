@@ -4,15 +4,24 @@ $Id$
 
 You need cmake, gcc, (g)make.
 
-Don't build over the sources:
+1) Prepare build
+
+It is nice not to clutter the source tree, so we prefer to make a 'build' dir:
 mkdir build && cd build
 
-Configure the sources:
+2) Configure the sources
+
 cmake ..
 
-And build:
+By default the install prefix is /usr/local, to specify another use:
+cmake -DCMAKE_INSTALL_PREFIX=/some/path ..
+
+3) Build
+
 make
 
--------------------------------------------
+4) Install
 
-TODO XXX: install targets
+(make sure you have permissions)
+
+make install
