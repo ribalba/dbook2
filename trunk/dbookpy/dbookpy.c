@@ -99,5 +99,5 @@ static PyMethodDef dbook_methods[] = {
 };
 
 PyMODINIT_FUNC initdbook(void){
-    (void) Py_InitModule("dbook", dbook_methods);
+    (void) Py_InitModule("dbookpy", dbook_methods);
 }
