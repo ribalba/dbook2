@@ -59,21 +59,21 @@ static PyObject * sanitize(PyObject *self, PyObject *args)
     return Py_BuildValue("s", ret_isbn);
 }
 
-/*static PyObject * get_isbn_details(PyObject * self, PyObject *args){
-    const char *isbn;
+static PyObject * get_isbn_details(PyObject * self, PyObject *args){
+    char* isbn;
     dbook_isbn book_isbn;
     dbook_book book_details;
     int rtn;
     
-    if(!PyArg_ParseTuple(args, "s", &isbn)){
+    if(!PyArg_ParseTuple(args, "s", isbn)){
         return NULL;
     }
     
     dbook_sanitize(isbn, book_isbn);
-    rtn = dbook_get_isbn_details(book_isbn, book_details);
+    rtn = dbook_get_isbn_details(book_isbn, &book_details);
     
     /* TODO: Figure out how to translate book_details into a python obj */
-/*}*/
+}
 
 static PyMethodDef dbook_methods[] = {
     {"check_isbn", check_isbn,  METH_VARARGS, "Check ISBN is valid"},
