@@ -3,7 +3,9 @@
 #include <iostream>
 #include <vector>
 #include <yaml.h>
-#include <libdbook.h>
+extern "C"{
+#include "libdbook.h"
+}
 #include "XSocket.h"
 
 using namespace std;
