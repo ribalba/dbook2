@@ -13,7 +13,6 @@
 char serverToTalkTo[50];
 int onlineMode = DBOOK_FALSE;
 
-
 int dbook_check_isbn(DBOOK_ISBN *isbnToCheck){
     if (onlineMode == DBOOK_FALSE){
         return dbook_check_isbn_loc(isbnToCheck);
