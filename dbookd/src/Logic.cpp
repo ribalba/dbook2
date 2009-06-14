@@ -36,7 +36,8 @@ void Logic::xDataReceived(XSocket* xSocket, string data)
 {
   stringstream ss;
   YAML::Node node;
-  string input;
+  string function;
+  string isbn;
   int result;
 
   cout << "\b\b" << "Data Received: " << data << endl;
@@ -46,13 +47,18 @@ void Logic::xDataReceived(XSocket* xSocket, string data)
   ss << data;
   YAML::Parser parser(ss);
   parser.GetNextDocument(node);
-  node["function"] >> input;
+  node["function"] >> function;
 
-  if(input == "dbook_check_isbn")
+  if(function == "dbook_check_isbn")
   {
-    node["isbn"] >> input;
-    result = dbook_check_isbn((DBOOK_ISBN*)input.c_str());
-    xSocket->xSend("" + result);
+    node["isbn"] >> isbn;
+    dbookd_check_isbn(xSocket, (char*)isbn.c_str());
+  }
+
+  if(function == "dbookd_isbn_10_to_13")
+  {
+    node["isbn"] >> isbn;
+    dbookd_check_isbn(xSocket, (char*)isbn.c_str());
   }
 
   //YAML::Emitter yaml;
@@ -69,6 +75,35 @@ void Logic::xDataReceived(XSocket* xSocket, string data)
   //yaml << "milk";
   //yaml << YAML::EndSeq;
   //cout << yaml.c_str() << endl;
+}
+
+void Logic::dbookd_check_isbn(XSocket* xSocket, DBOOK_ISBN *inputISBN)
+{
+  YAML::Emitter yaml;
+  int result;
+
+  result = dbook_check_isbn(inputISBN);
+
+  yaml << YAML::BeginMap;
+  yaml << YAML::Key << "result";
+  yaml << YAML::Value << result;
+  yaml << YAML::EndMap;
+  xSocket->xSend(yaml.c_str());
+}
+
+void Logic::dbookd_isbn_10_to_13(XSocket* xSocket, DBOOK_ISBN* inputISBN)
+{
+  YAML::Emitter yaml;
+  int result;
+  DBOOK_ISBN* outputISBN;
+
+  result = dbook_isbn_10_to_13(inputISBN, outputISBN);
+
+  yaml << YAML::BeginMap;
+  yaml << YAML::Key << "isbn";
+  yaml << YAML::Value << outputISBN;
+  yaml << YAML::EndMap;
+  xSocket->xSend(yaml.c_str());
 }
 
 void Logic::xConnected()
