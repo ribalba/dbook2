@@ -14,6 +14,3 @@ INSTALL(TARGETS dbook
 	LIBRARY DESTINATION lib
 )
 
-
-
-
