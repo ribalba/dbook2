@@ -100,11 +100,15 @@ static PyObject * configure(PyObject * self, PyObject * args)
     }
     
     PyObject * keys_list = PyDict_Keys(config_dict);
-    /*
-    config.server = PyString_AsString(PyDict_GetItemString(config_dict, "server"));
-    config.serverMode = PyDict_GetItemString(config_dict, "server_mode");
-    config.debug = PyDict_GetItemString(config_dict, "debug");
-    */
+    
+    PyObject * server = PyDict_GetItemString(config_dict, "server");
+    PyObject * server_mode = PyDict_GetItemString(config_dict, "server_mode");
+    PyObject * debug = PyDict_GetItemString(config_dict, "debug");
+    
+    //config.server = PyString_AsString(server);
+    config.serverMode = PyInt_AsInt(server_mode);
+    config.debug = PyInt_AsInt(debug);
+    
     return config_dict;
 }
 
@@ -129,6 +133,6 @@ static PyMethodDef dbook_methods[] = {
     {NULL, NULL, 0, NULL},
 };
 
-PyMODINIT_FUNC initdbook(void){
+PyMODINIT_FUNC initdbookpy(void){
     (void) Py_InitModule("dbookpy", dbook_methods);
 }
