@@ -7,7 +7,7 @@ OBJS = main.o Logic.o XSocket.o
 
 LD = g++
 CLFLAGS = 
-SLFLAGS = -L../../libdbook/src -L/usr/local/lib -lyaml-cpp -I../../libdbook/src -I/usr/local/include/yaml-cpp
+SLFLAGS = -L../../libdbook/src -L/usr/local/lib -lyaml-cpp -ldbook -I../../libdbook/src -I/usr/local/include/yaml-cpp
 
 all: $(CPPS) dbookd
 
