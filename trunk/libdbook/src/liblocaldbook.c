@@ -8,7 +8,7 @@
 /** 
   Returns the checksum for a ISBN 10 passed in as paramter
   */
-int dbook_genChkSum10(DBOOK_ISBN *isbnToTest) {
+char dbook_genChkSum10_loc(DBOOK_ISBN *isbnToTest) {
     /*The multiplier */
     int multy = 10;
 
@@ -42,7 +42,7 @@ int dbook_genChkSum10(DBOOK_ISBN *isbnToTest) {
 /** 
   Returns the checksum for a ISBN 13 passed in as paramter
   */
-int dbook_genChkSum13(DBOOK_ISBN *isbnToTest) {
+char dbook_genChkSum13_loc(DBOOK_ISBN *isbnToTest) {
 
 
     /*The multiplyer */
@@ -114,12 +114,67 @@ int dbook_check_isbn_loc(DBOOK_ISBN *isbnToCheck){
 }
 
 int dbook_isbn_10_to_13_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
-    to = "9780091906122";
+    //Null everything before we do anything
+    memset(to, 0, strlen(to));
+
+    if(dbook_is_isbn_10(from) != DBOOK_TRUE) {
+        fprintf(stderr, "When calling dbook_isbn_10_to_13 please pass in a 10 based isbn");
+        return DBOOK_FALSE;
+    }
+
+    if (dbook_check_isbn(from) != DBOOK_TRUE){
+        fprintf(stderr, "Please pass in a valid isbn to dbook_isbn_10_to_13");
+        return DBOOK_FALSE;
+    }
+
+    dbook_isbn fromClean = "";
+
+    dbook_sanitize(from, fromClean);
+
+    strncpy(to,"978",3);
+    strncat(to,fromClean,9);
+    char chkSum = dbook_genChkSum13(to) + '0';
+
+    strncat(to, &chkSum,1);
+
+
     return DBOOK_TRUE;
 }
 
 int dbook_isbn_13_to_10_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
-    to = "0091906121";
+    //Null everything before we do anything
+    memset(to, 0, strlen(to));
+    if(dbook_is_isbn_13(from) != DBOOK_TRUE) {
+        fprintf(stderr, "When calling dbook_isbn_13_to_10 please pass in a 10 based isbn");
+        return DBOOK_FALSE;
+    }
+
+    if (dbook_check_isbn(from) != DBOOK_TRUE){
+        fprintf(stderr, "Please pass in a valid isbn to dbook_isbn_13_to_10");
+        return DBOOK_FALSE;
+    }
+
+    if (strncmp(from,"978",3) !=0) {
+        fprintf(stderr, "Only ISBN-13 numbers beginning with 978 can be converted to ISBN-10.");
+        return DBOOK_FALSE;
+    }
+   
+    dbook_isbn fromClean = "";
+
+    dbook_sanitize(from, fromClean);
+
+
+    strncpy(to,fromClean+3,9);
+    
+    char chkSum = dbook_genChkSum10(to);
+    
+    if (chkSum == 'X') {
+       strncat(to,"X",1);
+    } else {
+        char chkSumDeci = chkSum + '0' ;
+        strncat(to, &chkSumDeci,1);
+    }
+
     return DBOOK_TRUE;
 }
 

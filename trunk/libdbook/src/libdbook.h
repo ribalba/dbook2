@@ -53,8 +53,8 @@ int dbook_is_isbn_13(DBOOK_ISBN *isbnToCheck);
 
 int dbook_is_isbn_10(DBOOK_ISBN *isbnToCheck);
 
-int dbook_genChkSum10(DBOOK_ISBN *isbnToTest);
+char dbook_genChkSum10(DBOOK_ISBN *isbnToTest);
 
-int dbook_genChkSum13(DBOOK_ISBN *isbnToTest);
+char dbook_genChkSum13(DBOOK_ISBN *isbnToTest);
 
 
