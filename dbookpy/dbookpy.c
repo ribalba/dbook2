@@ -100,22 +100,22 @@ static PyObject * configure(PyObject * self, PyObject * args)
     }
     
     PyObject * keys_list = PyDict_Keys(config_dict);
-    
-    config.server = PyDict_GetItemString(config_dict, "server");
+    /*
+    config.server = PyString_AsString(PyDict_GetItemString(config_dict, "server"));
     config.serverMode = PyDict_GetItemString(config_dict, "server_mode");
     config.debug = PyDict_GetItemString(config_dict, "debug");
-    
+    */
     return config_dict;
 }
 
-static PyObject * get_config(PyObject * self, PyOject * args)
+static PyObject * get_config(PyObject * self, PyObject * args)
 {
     dbook_config config;
     PyObject *config_dict = PyDict_New();
     
     PyDict_SetItem(config_dict, PyString_FromString("server"), PyString_FromString(config.server));
-    PyDict_SetItem(config_dict, PyString_FromString('server_mode'), Py_BuildValue("i", config.serverMode));
-    PyDict.SetItem(config_dict, PyString_FromString('debug'), Py_BuildValue("i", config.debug));
+    PyDict_SetItem(config_dict, PyString_FromString("server_mode"), Py_BuildValue("i", config.serverMode));
+    PyDict_SetItem(config_dict, PyString_FromString("debug"), Py_BuildValue("i", config.debug));
     
     return config_dict;    
 }
