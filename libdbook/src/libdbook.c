@@ -15,7 +15,13 @@ int onlineMode = DBOOK_FALSE;
 
 
 int dbook_check_isbn(DBOOK_ISBN *isbnToCheck){
-    return DBOOK_TRUE;
+    if (onlineMode == DBOOK_FALSE){
+        return dbook_check_isbn_loc(isbnToCheck);
+    }else{
+        //dbook_sanitize_dis(from, to);
+    }
+
+    return DBOOK_FALSE;
 }
 
 int dbook_isbn_10_to_13(DBOOK_ISBN *from, DBOOK_ISBN *to){
