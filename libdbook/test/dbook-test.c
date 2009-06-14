@@ -72,7 +72,7 @@ int main(void) {
     }
 
     printf("dbook_is_isbn_13()...\n");
-	ret = dbook_is_isbn_13("123 9780593054277");
+	ret = dbook_is_isbn_13("978059305427x");
     if (ret != DBOOK_FALSE) {
         printf("ERROR in is_isbn13 error\n");
     }
@@ -84,7 +84,7 @@ int main(void) {
     }
 
     printf("dbook_is_isbn_10()...\n");
-	ret = dbook_is_isbn_10("123 0593054277");
+	ret = dbook_is_isbn_10("059305427x");
     if (ret != DBOOK_FALSE) {
         printf("ERROR in is_isbn10 error\n");
     }
