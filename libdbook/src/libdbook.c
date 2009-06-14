@@ -24,13 +24,24 @@ int dbook_check_isbn(DBOOK_ISBN *isbnToCheck){
 }
 
 int dbook_isbn_10_to_13(DBOOK_ISBN *from, DBOOK_ISBN *to){
-    to = "9780091906122";
-    return DBOOK_TRUE;
+    if (onlineMode == DBOOK_FALSE){
+       return dbook_isbn_10_to_13_loc(from, to);
+    }else{
+        //dbook_sanitize_dis(from, to);
+    }
+
+    return DBOOK_FALSE;
+
 }
 
 int dbook_isbn_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to){
-    to = "0091906121";
-    return DBOOK_TRUE;
+    if (onlineMode == DBOOK_FALSE){
+       return dbook_isbn_13_to_10_loc(from, to);
+    }else{
+        //dbook_sanitize_dis(from, to);
+    }
+
+    return DBOOK_FALSE;
 }
 
 int dbook_sanitize(char *from, DBOOK_ISBN *to){
@@ -81,4 +92,23 @@ int dbook_is_isbn_10(DBOOK_ISBN *isbnToCheck){
     return DBOOK_FALSE;
 
 }
+
+char dbook_genChkSum10(DBOOK_ISBN *isbnToTest){
+    if (onlineMode == DBOOK_FALSE){
+        return dbook_genChkSum10_loc(isbnToTest);
+    }else{
+        //dbook_sanitize_dis(from, to);
+    }
+    return DBOOK_FALSE;
+}
+
+char dbook_genChkSum13(DBOOK_ISBN *isbnToTest){
+    if (onlineMode == DBOOK_FALSE){
+        return dbook_genChkSum13_loc(isbnToTest);
+    }else{
+        //dbook_sanitize_dis(from, to);
+    }
+    return DBOOK_FALSE;
+}
+
 
