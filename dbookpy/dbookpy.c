@@ -105,9 +105,9 @@ static PyObject * configure(PyObject * self, PyObject * args)
     PyObject * server_mode = PyDict_GetItemString(config_dict, "server_mode");
     PyObject * debug = PyDict_GetItemString(config_dict, "debug");
     
-    //config.server = PyString_AsString(server);
+    /*config.server = PyString_AsString(server);
     config.serverMode = PyInt_AsInt(server_mode);
-    config.debug = PyInt_AsInt(debug);
+    config.debug = PyInt_AsInt(debug);*/
     
     return config_dict;
 }
