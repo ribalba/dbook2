@@ -108,7 +108,7 @@ bool XSocket::xSend(string data)
     return false;
   }
 
-  data = data + '\n';
+  data = data + '!';
 
   n = write(sockfd, data.c_str(), data.length());
 
@@ -159,7 +159,7 @@ void* xReceiveThread(void* xSocket)
 
     for(int index = 0; index < n; index++)
     {
-      if(buffer[index] != '\n')
+      if(buffer[index] != '!')
       {
         ss << buffer[index];
       }
