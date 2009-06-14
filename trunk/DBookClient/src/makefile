@@ -1,27 +1,27 @@
 #
-# dbookd Makefile
+# DBookClient Makefile
 #
 
 CPPS = main.cpp Logic.cpp XSocket.cpp
 OBJS = main.o Logic.o XSocket.o
 
 LD = g++
-CLFLAGS = -I../../libdbook/src -I/usr/local/include/yaml-cpp -L../../libdbook/build/src -L/usr/local/lib
-SLFLAGS = -lyaml-cpp -ldbook
+CLFLAGS = -I/usr/local/include/yaml-cpp -L/usr/local/lib
+SLFLAGS = -lyaml-cpp
 
-all: $(CPPS) dbookd
+all: $(CPPS) DBookClient
 
 %.o: %.cpp
 	$(LD) $(CLFLAGS) $(SLFLAGS) -c $<
 
-dbookd: $(OBJS)
-	$(LD) -o ../bin/dbookd $(OBJS) $(CLFLAGS) $(SLFLAGS) $(CPPOFDB)
+DBookClient: $(OBJS)
+	$(LD) -o ../bin/DBookClient $(OBJS) $(CLFLAGS) $(SLFLAGS) $(CPPOFDB)
 
 help:
-	@echo "dbookd Makefile"
+	@echo "DBookClient Makefile"
 	@echo
 	@echo "make"
-	@echo "  Compiles dbookd"
+	@echo "  Compiles DBookClient"
 	@echo
 	@echo "make clean_o"
 	@echo "  Only clean objects"
@@ -33,4 +33,4 @@ clean_o:
 	rm *.o
 
 clean:
-	rm *.o ../bin/dbookd*
+	rm *.o ../bin/DBookClient*
