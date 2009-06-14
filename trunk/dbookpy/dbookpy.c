@@ -79,14 +79,45 @@ static PyObject * get_isbn_details(PyObject * self, PyObject *args){
     PyDict_SetItem(book_dict, PyString_FromString("author"), PyString_FromString(book_details.author));
     PyDict_SetItem(book_dict, PyString_FromString("date"), PyString_FromString(book_details.date));
     PyDict_SetItem(book_dict, PyString_FromString("publisher"), PyString_FromString(book_details.publisher));
-    PyDict_SetItem(book_dict, PyString_FromString("edition"), Py_BuildValue("d", book_details.edition));
-    PyDict_SetItem(book_dict, PyString_FromString("pagecount"), Py_BuildValue("d", book_details.pagecount));
+    PyDict_SetItem(book_dict, PyString_FromString("edition"), Py_BuildValue("i", book_details.edition));
+    PyDict_SetItem(book_dict, PyString_FromString("pagecount"), Py_BuildValue("i", book_details.pagecount));
     PyDict_SetItem(book_dict, PyString_FromString("image_path"), PyString_FromString(book_details.image_path));
     PyDict_SetItem(book_dict, PyString_FromString("category"), PyString_FromString(book_details.category));
     PyDict_SetItem(book_dict, PyString_FromString("url"), PyString_FromString(book_details.url));
     PyDict_SetItem(book_dict, PyString_FromString("booktype"), PyString_FromString(book_details.booktype));
     
     return book_dict;
+}
+
+static PyObject * configure(PyObject * self, PyObject * args)
+{
+    dbook_config config;
+    PyObject * config_dict = 0;
+    PyArg_ParseTuple(args, "0", config_dict);
+    
+    if(!PyDict_Check(config_dict)){
+        return NULL;
+    }
+    
+    PyObject * keys_list = PyDict_Keys(config_dict);
+    
+    config.server = PyDict_GetItemString(config_dict, "server");
+    config.serverMode = PyDict_GetItemString(config_dict, "server_mode");
+    config.debug = PyDict_GetItemString(config_dict, "debug");
+    
+    return config_dict;
+}
+
+static PyObject * get_config(PyObject * self, PyOject * args)
+{
+    dbook_config config;
+    PyObject *config_dict = PyDict_New();
+    
+    PyDict_SetItem(config_dict, PyString_FromString("server"), PyString_FromString(config.server));
+    PyDict_SetItem(config_dict, PyString_FromString('server_mode'), Py_BuildValue("i", config.serverMode));
+    PyDict.SetItem(config_dict, PyString_FromString('debug'), Py_BuildValue("i", config.debug));
+    
+    return config_dict;    
 }
 
 static PyMethodDef dbook_methods[] = {
