@@ -167,7 +167,7 @@ void* xReceiveThread(void* xSocket)
       {
         if(ss.str() != "")
         {
-          ((XSocket*)xSocket)->parent->xDataReceived(ss.str());
+          ((XSocket*)xSocket)->parent->xDataReceived((XSocket*)xSocket, ss.str());
           ss.str("");
         }        
       }
@@ -183,6 +183,6 @@ void* xReceiveThread(void* xSocket)
 XSocketAdapter::XSocketAdapter(){}
 XSocketAdapter::~XSocketAdapter(){}
 void XSocketAdapter::xConnectionRequest(int sockfd){}
-void XSocketAdapter::xDataReceived(string data){}
+void XSocketAdapter::xDataReceived(XSocket* xSocket, string data){}
 void XSocketAdapter::xDisconnected(){}
 void XSocketAdapter::xConnected(){}

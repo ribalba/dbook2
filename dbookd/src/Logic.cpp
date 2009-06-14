@@ -32,20 +32,43 @@ void Logic::xConnectionRequest(int sockfd)
   xSockets.push_back(listenSocket->xAccept(sockfd));
 }
 
-void Logic::xDataReceived(string data)
+void Logic::xDataReceived(XSocket* xSocket, string data)
 {
-  YAML::Emitter yaml;
+  stringstream ss;
+  YAML::Node node;
+  string input;
+  int result;
 
-  //cout << "\b\b" << "Data Received: " << data << endl;
-  //cout << "> ";
-  //flush(cout);
+  cout << "\b\b" << "Data Received: " << data << endl;
+  cout << "> ";
+  flush(cout);
 
-  yaml << YAML::BeginSeq;
-  yaml << "eggs";
-  yaml << "bread";
-  yaml << "milk";
-  yaml << YAML::EndSeq;
-  cout << yaml.c_str() << endl;
+  ss << data;
+  YAML::Parser parser(ss);
+  parser.GetNextDocument(node);
+  node["function"] >> input;
+
+  if(input == "dbook_check_isbn")
+  {
+    node["isbn"] >> input;
+    result = dbook_check_isbn((DBOOK_ISBN*)input.c_str());
+    xSocket->xSend("" + result);
+  }
+
+  //YAML::Emitter yaml;
+  //yaml << YAML::BeginMap;
+  //yaml << YAML::Key << "function";
+  //yaml << YAML::Value << "check_isbn";
+  //yaml << YAML::Key << "isbn";
+  //yaml << YAML::Value << "0123456789123";
+  //yaml << YAML::EndMap;
+
+  //yaml << YAML::BeginSeq;
+  //yaml << "eggs";
+  //yaml << "bread";
+  //yaml << "milk";
+  //yaml << YAML::EndSeq;
+  //cout << yaml.c_str() << endl;
 }
 
 void Logic::xConnected()

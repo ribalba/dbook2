@@ -24,7 +24,7 @@ class XSocketAdapter
     XSocketAdapter();
     ~XSocketAdapter();
     virtual void xConnectionRequest(int sockfd);
-    virtual void xDataReceived(string data);
+    virtual void xDataReceived(XSocket* xSocket, string data);
     virtual void xConnected();
     virtual void xDisconnected();
 };
