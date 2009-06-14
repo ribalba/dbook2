@@ -1,4 +1,4 @@
-/*
+'/*
  * $Id$
  * -----------------------
  * The distributed dbook thing
@@ -8,40 +8,61 @@
 #include <string.h>
 #include "libdbook.h"
 
-int dbook_check_isbn(DBOOK_ISBN *isbnToCheck){
-    return DBOOK_TRUE;
+
+/** 
+  Returns the checksum for a ISBN 10 passed in as paramter
+  */
+char dbook_genChkSum10_dis(DBOOK_ISBN *isbnToTest) {
+    return 'X';
 }
 
-int dbook_isbn_10_to_13(DBOOK_ISBN *from, DBOOK_ISBN *to){
-    to = "9780091906122";
-    return DBOOK_TRUE;
+
+/** 
+  Returns the checksum for a ISBN 13 passed in as paramter
+  */
+char dbook_genChkSum13_dis(DBOOK_ISBN *isbnToTest) {
+    return 'X';
 }
 
-int dbook_isbn_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to){
-    to = "0091906121";
-    return DBOOK_TRUE;
+
+
+int dbook_check_isbn_dis(DBOOK_ISBN *isbnToCheck){
+    return DBOOK_FALSE;
 }
 
-int dbook_sanitize(char *from, DBOOK_ISBN *to){
-    to = "9780091906122";
-    return DBOOK_TRUE;
+int dbook_isbn_10_to_13_dis(DBOOK_ISBN *from, DBOOK_ISBN *to){
+    return DBOOK_FALSE;
 }
 
-int dbook_get_isbn_details(DBOOK_ISBN *whichBook, dbook_book *book){
-    strcpy(book->isbn, "9780091906122");
-    strcpy(book->title, "Are You a Geek?");
-    strcpy(book->author, "Tim Collins");
-    strcpy(book->date, "6-09-2005");
-    strcpy(book->publisher, "Ebury Press");
-    return DBOOK_TRUE;
+int dbook_isbn_13_to_10_dis(DBOOK_ISBN *from, DBOOK_ISBN *to){
+    return DBOOK_FALSE;
 }
 
-int dbook_configure(dbook_config *config){
-    strcpy(serverToTalkTo, config->server);
-    return DBOOK_TRUE;
+/**
+ * Removes all the rubbish that is normally in an isbn like - and spaces
+ * first value is a char * to be cleaned
+ * second is a dbook_isbn for the clean isbn to be put in
+ */ 
+int dbook_sanitize_dis(char *from, DBOOK_ISBN *to){
+    return DBOOK_FALSE;
 }
 
-int dbook_get_config(dbook_config *config){
-    strcpy(config->server, serverToTalkTo);
-    return DBOOK_TRUE;
+int dbook_get_isbn_details_dis(DBOOK_ISBN *whichBook, dbook_book *book){
+    return DBOOK_FALSE;
 }
+
+
+/**
+ * Checks if the isbn is a isbn 13. Does not validate only takes the length
+ */
+int dbook_is_isbn_13_dis(DBOOK_ISBN *isbnToCheck){
+    return DBOOK_FALSE;
+}
+
+/**
+ * Checks if the isbn is a isbn 10. Does not validate only takes the length
+ */
+int dbook_is_isbn_10_dis(DBOOK_ISBN *isbnToCheck){
+    return DBOOK_FALSE; 
+}
+
