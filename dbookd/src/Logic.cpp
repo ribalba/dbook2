@@ -7,10 +7,9 @@ void Logic::run()
 {
   string input;
 
-  cout << "dbookd                      " << endl;
-  cout << "------                      " << endl;
-  cout << "type 'help' for instructions" << endl;
-  cout << "                            " << endl;
+  cout << "DBook Daemon    " << endl;
+  cout << "------------    " << endl;
+  cout << "'ctrl-c' to quit" << endl;
 
   listenSocket = new XSocket(this, 1987);
 
@@ -22,8 +21,7 @@ void Logic::run()
 
   while(true)
   {
-    cout << "> ";
-    cin >> input;
+    sleep(1000);
   }
 
   return;
@@ -44,7 +42,6 @@ void Logic::xDataReceived(XSocket* xSocket, string data)
   string function;
   string isbn;
   string input;
-  int result;
 
   cout << "\b\b" << "Data Received: " << data << endl;
   cout << "> ";
@@ -61,13 +58,13 @@ void Logic::xDataReceived(XSocket* xSocket, string data)
     dbookd_check_isbn(xSocket, (char*)isbn.c_str());
   }
 
-  if(function == "dbookd_isbn_10_to_13")
+  if(function == "dbook_isbn_10_to_13")
   {
     node["isbn"] >> isbn;
     dbookd_isbn_10_to_13(xSocket, (char*)isbn.c_str());
   }
 
-  if(function == "dbookd_isbn_13_to_10")
+  if(function == "dbook_isbn_13_to_10")
   {
     node["isbn"] >> isbn;
     dbookd_isbn_13_to_10(xSocket, (char*)isbn.c_str());
@@ -82,7 +79,31 @@ void Logic::xDataReceived(XSocket* xSocket, string data)
   if(function == "dbook_get_isbn_details")
   {
     node["isbn"] >> isbn;
-    dbookd_sanitize(xSocket, (char*)isbn.c_str());
+    dbookd_get_isbn_details(xSocket, (char*)isbn.c_str());
+  }
+
+  if(function == "dbook_is_isbn_13")
+  {
+    node["isbn"] >> isbn;
+    dbookd_is_isbn_13(xSocket, (char*)isbn.c_str());
+  }
+
+  if(function == "dbook_is_isbn_10")
+  {
+    node["isbn"] >> isbn;
+    dbookd_is_isbn_10(xSocket, (char*)isbn.c_str());
+  }
+
+  if(function == "dbook_genChkSum10")
+  {
+    node["isbn"] >> isbn;
+    dbookd_genChkSum10(xSocket, (char*)isbn.c_str());
+  }
+
+  if(function == "dbook_genChkSum13")
+  {
+    node["isbn"] >> isbn;
+    dbookd_genChkSum13(xSocket, (char*)isbn.c_str());
   }
 
   //YAML::Emitter yaml;
@@ -126,8 +147,18 @@ void Logic::dbookd_isbn_10_to_13(XSocket* xSocket, DBOOK_ISBN* inputISBN)
   yaml << YAML::BeginMap;
   yaml << YAML::Key << "result";
   yaml << YAML::Value << result;
-  yaml << YAML::Key << "isbn";
-  yaml << YAML::Value << outputISBN;
+
+  if(result == DBOOK_TRUE)
+  {
+    yaml << YAML::Key << "isbn";
+    yaml << YAML::Value << outputISBN;
+  }
+  else
+  {
+    yaml << YAML::Key << "error";
+    yaml << YAML::Value << result;
+  }
+
   yaml << YAML::EndMap;
   xSocket->xSend(yaml.c_str());
 }
@@ -143,8 +174,18 @@ void Logic::dbookd_isbn_13_to_10(XSocket* xSocket, DBOOK_ISBN* inputISBN)
   yaml << YAML::BeginMap;
   yaml << YAML::Key << "result";
   yaml << YAML::Value << result;
-  yaml << YAML::Key << "isbn";
-  yaml << YAML::Value << outputISBN;
+
+  if(result == DBOOK_TRUE)
+  {
+    yaml << YAML::Key << "isbn";
+    yaml << YAML::Value << outputISBN;
+  }
+  else
+  {
+    yaml << YAML::Key << "error";
+    yaml << YAML::Value << result;
+  }
+
   yaml << YAML::EndMap;
   xSocket->xSend(yaml.c_str());
 }
@@ -160,8 +201,18 @@ void Logic::dbookd_sanitize(XSocket* xSocket, char* input)
   yaml << YAML::BeginMap;
   yaml << YAML::Key << "result";
   yaml << YAML::Value << result;
-  yaml << YAML::Key << "isbn";
-  yaml << YAML::Value << outputISBN;
+
+  if(result == DBOOK_TRUE)
+  {
+    yaml << YAML::Key << "isbn";
+    yaml << YAML::Value << outputISBN;
+  }
+  else
+  {
+    yaml << YAML::Key << "error";
+    yaml << YAML::Value << result;
+  }
+
   yaml << YAML::EndMap;
   xSocket->xSend(yaml.c_str());
 }
@@ -169,43 +220,136 @@ void Logic::dbookd_sanitize(XSocket* xSocket, char* input)
 void Logic::dbookd_get_isbn_details(XSocket* xSocket, DBOOK_ISBN* inputISBN)
 {
   YAML::Emitter yaml;
+  bool found;
   int result;
   dbook_book* outputBook;
 
-  result = dbook_get_isbn_details(inputISBN, outputBook);
+  found = false;
+
+  for(int index = 0; index < bookCache.size(); index++)
+  {
+    if(bookCache[index]->isbn == inputISBN)
+    {
+      found = true;
+      outputBook = bookCache[index];
+    }
+  }
+
+  if(found == false)
+  {
+    result = dbook_get_isbn_details(inputISBN, outputBook);
+  }
 
   yaml << YAML::BeginMap;
   yaml << YAML::Key << "result";
   yaml << YAML::Value << result;
-  yaml << YAML::Key << "title";
-  yaml << YAML::Value << outputBook->title;
-  yaml << YAML::Key << "author";
-  yaml << YAML::Value << outputBook->author;
-  yaml << YAML::Key << "date";
-  yaml << YAML::Value << outputBook->date;
-  yaml << YAML::Key << "publisher";
-  yaml << YAML::Value << outputBook->publisher;
-  yaml << YAML::Key << "edition";
-  yaml << YAML::Value << outputBook->edition;
-  yaml << YAML::Key << "pagecount";
-  yaml << YAML::Value << outputBook->pagecount;
-  yaml << YAML::Key << "image_path";
-  yaml << YAML::Value << outputBook->image_path;
-  yaml << YAML::Key << "category";
-  yaml << YAML::Value << outputBook->category;
-  yaml << YAML::Key << "url";
-  yaml << YAML::Value << outputBook->url;
-  yaml << YAML::Key << "booktype";
-  yaml << YAML::Value << outputBook->booktype;
+
+  if(result == DBOOK_TRUE)
+  {
+    yaml << YAML::Key << "isbn";
+    yaml << YAML::Value << outputBook->isbn;
+    yaml << YAML::Key << "title";
+    yaml << YAML::Value << outputBook->title;
+    yaml << YAML::Key << "author";
+    yaml << YAML::Value << outputBook->author;
+    yaml << YAML::Key << "date";
+    yaml << YAML::Value << outputBook->date;
+    yaml << YAML::Key << "publisher";
+    yaml << YAML::Value << outputBook->publisher;
+    yaml << YAML::Key << "edition";
+    yaml << YAML::Value << outputBook->edition;
+    yaml << YAML::Key << "pagecount";
+    yaml << YAML::Value << outputBook->pagecount;
+    yaml << YAML::Key << "image_path";
+    yaml << YAML::Value << outputBook->image_path;
+    yaml << YAML::Key << "category";
+    yaml << YAML::Value << outputBook->category;
+    yaml << YAML::Key << "url";
+    yaml << YAML::Value << outputBook->url;
+    yaml << YAML::Key << "booktype";
+    yaml << YAML::Value << outputBook->booktype;
+
+    if(found == false)
+    {
+      bookCache.push_back(outputBook);
+
+      if(bookCache.size() > BOOK_CACHE_SIZE)
+      {
+        bookCache.erase(bookCache.begin() + BOOK_CACHE_SIZE);
+      }
+    }
+  }
+  else
+  {
+    yaml << YAML::Key << "error";
+    yaml << YAML::Value << result;
+  }
+
+  yaml << YAML::EndMap;
+  xSocket->xSend(yaml.c_str());
+}
+
+void Logic::dbookd_is_isbn_13(XSocket* xSocket, DBOOK_ISBN* inputISBN)
+{
+  YAML::Emitter yaml;
+  int result;
+
+  result = dbook_is_isbn_13(inputISBN);
+
+  yaml << YAML::BeginMap;
+  yaml << YAML::Key << "result";
+  yaml << YAML::Value << result;
+  yaml << YAML::EndMap;
+  xSocket->xSend(yaml.c_str());
+}
+
+void Logic::dbookd_is_isbn_10(XSocket* xSocket, DBOOK_ISBN* inputISBN)
+{
+  YAML::Emitter yaml;
+  int result;
+
+  result = dbook_is_isbn_10(inputISBN);
+
+  yaml << YAML::BeginMap;
+  yaml << YAML::Key << "result";
+  yaml << YAML::Value << result;
+  yaml << YAML::EndMap;
+  xSocket->xSend(yaml.c_str());
+}
+
+void Logic::dbookd_genChkSum10(XSocket* xSocket, DBOOK_ISBN* inputISBN)
+{
+  YAML::Emitter yaml;
+  int result;
+
+  result = dbook_genChkSum10(inputISBN);
+
+  yaml << YAML::BeginMap;
+  yaml << YAML::Key << "result";
+  yaml << YAML::Value << result;
+  yaml << YAML::EndMap;
+  xSocket->xSend(yaml.c_str());
+}
+
+void Logic::dbookd_genChkSum13(XSocket* xSocket, DBOOK_ISBN* inputISBN)
+{
+  YAML::Emitter yaml;
+  int result;
+
+  result = dbook_genChkSum13(inputISBN);
+
+  yaml << YAML::BeginMap;
+  yaml << YAML::Key << "result";
+  yaml << YAML::Value << result;
   yaml << YAML::EndMap;
   xSocket->xSend(yaml.c_str());
 }
 
 void Logic::xConnected()
 {
-  cout << "\b\b" << "Client Connected: " << xSockets.size() - 1 << endl;
-  cout << "> ";
-  flush(cout);
+  //cout << "\b\b" << "Client Connected: " << xSockets.size() - 1 << endl;
+  //cout << "> ";
+  //flush(cout);
 }
 
 void Logic::xDisconnected()
@@ -216,9 +360,9 @@ void Logic::xDisconnected()
     {
       delete xSockets[index];
       xSockets.erase(xSockets.begin() + index);
-      cout << "\b\b" << "Client Disconnected: " << index << endl;
-      cout << "> ";
-      flush(cout);
+      //cout << "\b\b" << "Client Disconnected: " << index << endl;
+      //cout << "> ";
+      //flush(cout);
     }
   }
 }
