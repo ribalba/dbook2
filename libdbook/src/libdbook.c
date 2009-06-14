@@ -55,6 +55,7 @@ int dbook_sanitize(char *from, DBOOK_ISBN *to){
 }
 
 int dbook_get_isbn_details(DBOOK_ISBN *whichBook, dbook_book *book){
+    memset(book, 0, sizeof(dbook_book));
     strcpy(book->isbn, "9780091906122");
     strcpy(book->title, "Are You a Geek?");
     strcpy(book->author, "Tim Collins");
