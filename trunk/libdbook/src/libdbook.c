@@ -112,4 +112,51 @@ char dbook_genChkSum13(DBOOK_ISBN *isbnToTest){
     return DBOOK_FALSE;
 }
 
+char *dbook_filter_book_plain(dbook_book *bk) {
+	/*
+	printf("ISBN:		%s\n", bk.isbn);
+	printf("Title:		%s\n", bk.title);
+	printf("Author:		%s\n", bk.author);
+	printf("Date:		%s\n", bk.date);
+	printf("Publisher:	%s\n", bk.publisher);
+	printf("Edition:	%d\n", bk.edition);
+	printf("Pages:		%d\n", bk.pagecount);
+	printf("Image Path:	%s\n", bk.image_path);
+	printf("Category:	%s\n", bk.category);
+	printf("URL:		%s\n", bk.url);
+	printf("Type:		%s\n", bk.booktype);
+	*/
+	return 0; /* XXX fixme */
+}
 
+char *dbook_filter_book_bibtex(dbook_book *bk) {
+	char *lines[9]; /* line 10 is always just a close brace */
+	char *ret = "";
+	int sz, ret_sz = 0;
+	int i;
+	const int btex_lines = 2;
+
+	/* key line */
+	sz = 9 + strlen(bk->isbn); /* ie, 7 + \n + \0 + isbn */
+	lines[0] = (char *) malloc(sz);
+	snprintf(lines[0], sz, "@BOOK{%s,\n", bk->isbn);
+
+	/* author line */
+	sz = 15 + strlen(bk->author);
+	lines[1] = (char *) malloc(sz);
+	snprintf(lines[1], sz, "\tauthor = \"%s\",\n", bk->author);
+
+	/* XXX and the rest */
+
+	for (i = 0; i < btex_lines; i ++) {
+		ret_sz = ret_sz + strlen(lines[i]);
+	}
+
+	ret = (char *) malloc(sz) + 1;
+	for (i = 0; i < btex_lines; i ++) {
+		strncat(ret, lines[i], strlen(lines[i]));
+		free(lines[i]);
+	}
+
+	return ret;
+}

@@ -5,22 +5,23 @@
  * The header file for the lib 
  */
 
-#define DBOOK_TRUE 0
-#define DBOOK_FALSE 1
+#define DBOOK_TRUE	0
+#define DBOOK_FALSE	1
 
+/* 10 or 13 long plus \0 */
+#define DBOOK_ISBN_LEN 14
 #define DBOOK_ISBN char
-#define DBOOK_ISBN_LEN 13
 
-typedef DBOOK_ISBN dbook_isbn[DBOOK_ISBN_LEN] ;
+typedef DBOOK_ISBN dbook_isbn[DBOOK_ISBN_LEN];
 
-typedef struct dbook_config_{
+typedef struct dbook_config_ {
     char server[50];
     int serverMode;   
     int debug;
-}dbook_config;
+} dbook_config;
 
 
-typedef struct dbook_book_{
+typedef struct dbook_book_ {
     DBOOK_ISBN isbn[DBOOK_ISBN_LEN];
     char title[250];
     char author[250];
@@ -33,7 +34,7 @@ typedef struct dbook_book_{
     char url[250];
     char booktype[50];
 
-}dbook_book;
+} dbook_book;
 
 int dbook_check_isbn(DBOOK_ISBN *isbnToCheck);
 
@@ -57,4 +58,6 @@ char dbook_genChkSum10(DBOOK_ISBN *isbnToTest);
 
 char dbook_genChkSum13(DBOOK_ISBN *isbnToTest);
 
+char *dbook_filter_book_plain(dbook_book *book);
 
+char *dbook_filter_book_bibtex(dbook_book *book);
