@@ -24,9 +24,9 @@ xmlDoc *doc = NULL;
 #define MAPLEN 3
 
 //For now only amazon is supported 
-char *amazonMap[MAPLEN][2] = {{"Author", "title"},
-                         {"Title", "title"},
-                         {"Publisher", "publisher"} 
+char *amazonMap[MAPLEN] = {"Author",
+                           "Title", 
+                           "Publisher"
 };
 
 void dbook_populate(xmlNode * a_node, dbook_book *book) {
@@ -37,13 +37,19 @@ void dbook_populate(xmlNode * a_node, dbook_book *book) {
         if (cur_node->type == XML_ELEMENT_NODE) {
             int i = 0;
             for (i =0; i < MAPLEN; i++){
-                if (xmlStrcmp((const xmlChar *)amazonMap[i][0], cur_node->name) == 0){
+                if (xmlStrcmp((const xmlChar *)amazonMap[i], cur_node->name) == 0){
                     //We have found something in the map
                     //Check if the child is of type 
                     if (cur_node->children->type == XML_TEXT_NODE){
                         key = xmlNodeListGetString(doc, cur_node->xmlChildrenNode, 1);
                         printf("Element: %s\n", cur_node->name);
                         printf("Keyword: %s\n", key);
+
+                        if(strncasecmp(cur_node->name, "Author")){
+                            strncpy(book->author,key,sizeof(book->author));
+                        }else if (strcmp(cur_node->name, "Title")){
+                            strncpy(book->title,key,sizeof(book->author));
+                        }
                         xmlFree(key);
                         //printf("%s\n", cur_node->children->name);
                     }else{
@@ -279,11 +285,6 @@ int dbook_get_isbn_details_loc(DBOOK_ISBN *whichBook, dbook_book *book){
      */
     xmlCleanupParser();
 
-    strcpy(book->isbn, "9780091906122");
-    strcpy(book->title, "Are You a Geek?");
-    strcpy(book->author, "Tim Collins");
-    strcpy(book->date, "6-09-2005");
-    strcpy(book->publisher, "Ebury Press");
     return DBOOK_TRUE;
 }
 
