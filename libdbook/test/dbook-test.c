@@ -13,7 +13,6 @@ int main(void) {
 	int ret;
 	dbook_book b1;
 	dbook_isbn i1="", i2="", i3="", i4 = "";
-	dbook_config c1, c2;
     memset(i3, 0, strlen(i3));
     memset(i4, 0, strlen(i4));
 
