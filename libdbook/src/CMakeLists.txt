@@ -3,15 +3,17 @@
 
 FIND_PACKAGE(LibXml2)
 
-LINK_DIRECTORIES("${CMAKE_INSTALL_PREFIX}/lib" ${LIBXML2_LIBRARIES})
+# XXX proper -L/path/to/libs
+
 INCLUDE_DIRECTORIES(
     "${CMAKE_INSTALL_PREFIX}/include"
-    ${LIBXML2_INCLUDE_DIR}
+    "${LIBXML2_INCLUDE_DIR}"
 )
 
 # libdistdbook is disabled in the build until someone fixes it
 OPTION(BUILD_SHARED_LIBS "turn OFF for .a libs" ON)
 ADD_LIBRARY(dbook libdbook liblocaldbook libdbook_filters) # libdistdbook
+TARGET_LINK_LIBRARIES(dbook xml2)
 SET_TARGET_PROPERTIES(dbook PROPERTIES LINKER_LANGUAGE C)
 SET_TARGET_PROPERTIES(dbook 
 PROPERTIES
