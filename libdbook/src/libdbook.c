@@ -57,12 +57,13 @@ int dbook_sanitize(char *from, DBOOK_ISBN *to){
 }
 
 int dbook_get_isbn_details(DBOOK_ISBN *whichBook, dbook_book *book){
-    memset(book, 0, sizeof(dbook_book));
-    strcpy(book->isbn, "9780091906122");
-    strcpy(book->title, "Are You a Geek?");
-    strcpy(book->author, "Tim Collins");
-    strcpy(book->date, "6-09-2005");
-    strcpy(book->publisher, "Ebury Press");
+    if (onlineMode == DBOOK_FALSE){
+        return dbook_get_isbn_details_loc(whichBook, book);
+    } else {
+        /* dbook_sanitize_dis(from, to); */
+    }
+    
+    
     return DBOOK_TRUE;
 }
 
