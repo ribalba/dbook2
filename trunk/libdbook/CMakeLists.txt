@@ -3,6 +3,13 @@
 
 PROJECT(libdbook)
 
+# XXX not right, work out how to do properly
+LINK_DIRECTORIES(
+    "${CMAKE_INSTALL_PREFIX}/lib"
+    "/usr/local/lib"
+    "/usr/lib"
+)
+
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 ADD_SUBDIRECTORY(src)
