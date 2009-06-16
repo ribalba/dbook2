@@ -3,28 +3,30 @@
  * -----------------------
  * Does everything locally
  */
+
+#include <stdio.h>
 #include <ctype.h> 
+#include "libdbook.h"
 
 /** 
-  Returns the checksum for a ISBN 10 passed in as paramter
+  * Returns the checksum for a ISBN 10 passed in as paramter
   */
-char dbook_genChkSum10_loc(DBOOK_ISBN *isbnToTest) {
+char dbook_gen_chksum_10_loc(DBOOK_ISBN *isbnToTest) {
+
     /*The multiplier */
     int multy = 10;
-
     int sum = 0;
-
     int checkSum = 0;
-    
-    int i = 0;
+    int i = 0, atoi_res;
 
     for (i = 0; i < 9; i++) {
-        /* Because atio thinks it is a pointer to a array it will shoot off into
-           memory. So if you want to convert a single char into a int don't use
-           atoi. */
-        int atoiIsGay = isbnToTest[i] - '0';
-        sum = sum + (atoiIsGay * multy);
-        multy--;
+        /* Because atio thinks it is a pointer to a array it will 
+         * shoot off into memory. So if you want to convert a single char 
+         * into a int don't use atoi.
+         */
+        atoi_res = isbnToTest[i] - '0';
+        sum = sum + (atoi_res * multy);
+        multy --;
     }
 
     checkSum = (11 - (sum % 11));
@@ -42,28 +44,26 @@ char dbook_genChkSum10_loc(DBOOK_ISBN *isbnToTest) {
 /** 
   Returns the checksum for a ISBN 13 passed in as paramter
   */
-char dbook_genChkSum13_loc(DBOOK_ISBN *isbnToTest) {
+char dbook_gen_chksum_13_loc(DBOOK_ISBN *isbnToTest) {
 
-
-    /*The multiplyer */
+    /* The multiplyer */
     int multy = 10;
-
     int sumodd = 0;
     int sumeve = 0;
-
     int checkSum = 0;
-
     int i = 0;
-    for (i = 0; i <= 11; i=i+2) {
-        /* Same as above */
-        int atoiIsGay = isbnToTest[i] - '0';
-        int atoiIsGay2 = isbnToTest[i+1] - '0';
+    int atoi1, atoi2;
 
-        sumodd = sumodd + atoiIsGay;
-        sumeve = sumeve + atoiIsGay2;
+    for (i = 0; i <= 11; i = i + 2) {
+        /* Same as above */
+        atoi1 = isbnToTest[i] - '0';
+        atoi2 = isbnToTest[i + 1] - '0';
+
+        sumodd = sumodd + atoi1;
+        sumeve = sumeve + atoi2;
     }
 
-    checkSum = (sumodd + (sumeve*3)) % multy;
+    checkSum = (sumodd + (sumeve * 3)) % multy;
 
     if (checkSum != 0)
         checkSum = multy - checkSum;
@@ -83,7 +83,7 @@ int dbook_check_isbn_loc(DBOOK_ISBN *isbnToCheck){
 
     /* If the size is equal to 10 do it */
     if (dbook_is_isbn_10(isbnToTest) == DBOOK_TRUE) {
-        int checkSum = dbook_genChkSum10(isbnToTest);
+        int checkSum = dbook_gen_chksum_10(isbnToTest);
 
         if (checkSum == 'X' && isbnToTest[9]=='X')
             return DBOOK_TRUE;
@@ -97,7 +97,7 @@ int dbook_check_isbn_loc(DBOOK_ISBN *isbnToCheck){
     /* If the size is equal to 13 do it */
     else if (dbook_is_isbn_13(isbnToTest) == DBOOK_TRUE) {
 
-        int checkSum = dbook_genChkSum13(isbnToTest);
+        int checkSum = dbook_gen_chksum_13(isbnToTest);
 
         if (checkSum == (isbnToTest[12] - '0'))
             return DBOOK_TRUE;
@@ -133,7 +133,7 @@ int dbook_isbn_10_to_13_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
 
     strncpy(to,"978",3);
     strncat(to,fromClean,9);
-    char chkSum = dbook_genChkSum13(to) + '0';
+    char chkSum = dbook_gen_chksum_13(to) + '0';
 
     strncat(to, &chkSum,1);
 
@@ -166,7 +166,7 @@ int dbook_isbn_13_to_10_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
 
     strncpy(to,fromClean+3,9);
     
-    char chkSum = dbook_genChkSum10(to);
+    char chkSum = dbook_gen_chksum_10(to);
     
     if (chkSum == 'X') {
        strncat(to,"X",1);
