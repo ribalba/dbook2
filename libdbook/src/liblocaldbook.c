@@ -48,7 +48,7 @@ void dbook_populate(xmlNode * a_node, dbook_book *book) {
                         if(strncasecmp(cur_node->name, "Author", sizeof(cur_node->name))){
                             strncpy(book->author,key,sizeof(book->author));
                         }else if (strcmp(cur_node->name, "Title"), sizeof(cur_node->name)){
-                            strncpy(book->title,key,sizeof(book->author));
+                            strncpy(book->title,key,sizeof(book->title));
                         }
                         xmlFree(key);
                         //printf("%s\n", cur_node->children->name);
@@ -252,6 +252,8 @@ int dbook_sanitize_loc(char *from, DBOOK_ISBN *to){
 }
 
 int dbook_get_isbn_details_loc(DBOOK_ISBN *whichBook, dbook_book *book){
+
+    memset(book,0,sizeof(dbook_book));
 
     xmlNode *root_element = NULL;
 
