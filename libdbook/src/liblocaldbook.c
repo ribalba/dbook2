@@ -21,6 +21,8 @@ xmlDoc *doc = NULL;
 #include <ctype.h> 
 #include "libdbook.h"
 
+#define MAPLEN 3
+
 //For now only amazon is supported 
 char *amazonMap[MAPLEN][2] = {{"Author", "title"},
                          {"Title", "title"},
