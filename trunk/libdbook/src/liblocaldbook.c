@@ -45,9 +45,9 @@ void dbook_populate(xmlNode * a_node, dbook_book *book) {
                         printf("Element: %s\n", cur_node->name);
                         printf("Keyword: %s\n", key);
 
-                        if(strncasecmp(cur_node->name, "Author")){
+                        if(strncasecmp(cur_node->name, "Author", sizeof(cur_node->name))){
                             strncpy(book->author,key,sizeof(book->author));
-                        }else if (strcmp(cur_node->name, "Title")){
+                        }else if (strcmp(cur_node->name, "Title"), sizeof(cur_node->name)){
                             strncpy(book->title,key,sizeof(book->author));
                         }
                         xmlFree(key);
