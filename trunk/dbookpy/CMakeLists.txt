@@ -2,7 +2,8 @@
 # $Id$
 
 PROJECT(dbookpy)
-SET(CMAKE_VERBOSE_MAKEFILE ON)
+#SET(CMAKE_VERBOSE_MAKEFILE ON)
+SET(CMAKE_C_FLAGS -Wall)
 OPTION(BUILD_SHARED_LIBS "turn OFF for .a libs" ON)
 
 # Standard places we might find stuff
