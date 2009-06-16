@@ -16,7 +16,7 @@
 xmlDoc *doc = NULL;
 
 // And the rest
-
+#include <string.h>
 #include <stdio.h>
 #include <ctype.h> 
 #include "libdbook.h"
@@ -247,6 +247,8 @@ int dbook_sanitize_loc(char *from, DBOOK_ISBN *to){
 
 int dbook_get_isbn_details_loc(DBOOK_ISBN *whichBook, dbook_book *book){
 
+    xmlNode *root_element = NULL;
+
     /*
      * this initialize the library and check potential ABI mismatches
      * between the version it was compiled for and the actual shared
@@ -254,19 +256,19 @@ int dbook_get_isbn_details_loc(DBOOK_ISBN *whichBook, dbook_book *book){
      */
     LIBXML_TEST_VERSION
 
-    char *booktest = "http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&Version=2005-03-23&Operation=ItemLookup&ContentType=text%2Fxml&SubscriptionId=0DK8EWAWVKXSH8SEMVR2&ItemId=067088703X&ResponseGroup=Medium"
+    char *booktest = "http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&Version=2005-03-23&Operation=ItemLookup&ContentType=text%2Fxml&SubscriptionId=0DK8EWAWVKXSH8SEMVR2&ItemId=067088703X&ResponseGroup=Medium";
     /*parse the file and get the DOM */
     doc = xmlReadFile(booktest, NULL, 0);
 
     if (doc == NULL) {
-        printf("error: could not parse file %s\n", argv[1]);
+        printf("error: could not parse file \n");
         return DBOOK_FALSE;
     }
 
     /*Get the root element node */
     root_element = xmlDocGetRootElement(doc);
 
-    dbook_populate(root_element);
+    dbook_populate(root_element, book);
 
     /*free the document */
     xmlFreeDoc(doc);
