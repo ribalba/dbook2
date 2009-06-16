@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <libdbook.h>
+#include <string.h>
 
 #define DBT_MODE_NONE			0
 #define DBT_MODE_CHECK_ISBN 		1
