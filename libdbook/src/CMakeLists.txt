@@ -1,7 +1,10 @@
-OPTION(BUILD_SHARED_LIBS "turn OFF for .a libs" ON)
-ADD_LIBRARY(dbook libdbook)
-SET_TARGET_PROPERTIES(dbook PROPERTIES LINKER_LANGUAGE C)
+# LIBDBOOK2 build system
+# $Id$
 
+# libdistdbook is disabled in the build until someone fixes it
+OPTION(BUILD_SHARED_LIBS "turn OFF for .a libs" ON)
+ADD_LIBRARY(dbook libdbook liblocaldbook) # libdistdbook
+SET_TARGET_PROPERTIES(dbook PROPERTIES LINKER_LANGUAGE C)
 SET_TARGET_PROPERTIES(dbook 
 PROPERTIES
 	SOVERSION 0.1

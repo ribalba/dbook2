@@ -1,3 +1,6 @@
+# LIBDBOOK2 build system
+# $Id$
+
 PROJECT(libdbook)
 
 ADD_SUBDIRECTORY(src)
