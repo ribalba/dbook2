@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include "libdbook.h"
 
-char serverToTalkTo[50];
+/* externed in libdbook.h */
+char dbook_server[50];
+
 int onlineMode = DBOOK_FALSE; /* XXX is this still needed? */
 
 int dbook_check_isbn(DBOOK_ISBN *isbnToCheck) {
@@ -47,7 +49,7 @@ int dbook_isbn_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to){
 int dbook_sanitize(char *from, DBOOK_ISBN *to){
     if (onlineMode == DBOOK_FALSE){
         dbook_sanitize_loc(from, to);
-    }else{
+    } else {
         /* dbook_sanitize_dis(from, to); */
     }
 
@@ -65,12 +67,12 @@ int dbook_get_isbn_details(DBOOK_ISBN *whichBook, dbook_book *book){
 }
 
 int dbook_configure(dbook_config *config){
-    strcpy(serverToTalkTo, config->server);
+    strcpy(dbook_server, config->server);
     return DBOOK_TRUE;
 }
 
 int dbook_get_config(dbook_config *config){
-    strcpy(config->server, serverToTalkTo);
+    strcpy(config->server, dbook_server);
     return DBOOK_TRUE;
 }
 

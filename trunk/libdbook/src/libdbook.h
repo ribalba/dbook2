@@ -15,6 +15,8 @@
 #define DBOOK_ISBN_LEN 14
 #define DBOOK_ISBN char
 
+extern char dbook_server[50];
+
 typedef DBOOK_ISBN dbook_isbn[DBOOK_ISBN_LEN];
 
 typedef struct dbook_config_ {
