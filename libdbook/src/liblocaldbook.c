@@ -3,10 +3,57 @@
  * -----------------------
  * Does everything locally
  */
+/*
+ * A lot was shamelessly copied from http://www.xmlsoft.org/examples/index.html#parse3.c
+ * Thx to the author Dodji Seketeli
+ */
+
+// For the XML stuff
+#include <stdio.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <strings.h>
+xmlDoc *doc = NULL;
+
+// And the rest
 
 #include <stdio.h>
 #include <ctype.h> 
 #include "libdbook.h"
+
+//For now only amazon is supported 
+char *amazonMap[MAPLEN][2] = {{"Author", "title"},
+                         {"Title", "title"},
+                         {"Publisher", "publisher"} 
+};
+
+void dbook_populate(xmlNode * a_node, dbook_book *book) {
+    xmlNode *cur_node = NULL;
+	xmlChar *key;
+
+    for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
+        if (cur_node->type == XML_ELEMENT_NODE) {
+            int i = 0;
+            for (i =0; i < MAPLEN; i++){
+                if (xmlStrcmp((const xmlChar *)amazonMap[i][0], cur_node->name) == 0){
+                    //We have found something in the map
+                    //Check if the child is of type 
+                    if (cur_node->children->type == XML_TEXT_NODE){
+                        key = xmlNodeListGetString(doc, cur_node->xmlChildrenNode, 1);
+                        printf("Element: %s\n", cur_node->name);
+                        printf("Keyword: %s\n", key);
+                        xmlFree(key);
+                        //printf("%s\n", cur_node->children->name);
+                    }else{
+                        //return error;
+                    }
+                }
+            }
+        }
+
+        dbook_populate(cur_node->children, book);
+    }
+}
 
 /** 
   * Returns the checksum for a ISBN 10 passed in as paramter
@@ -197,6 +244,37 @@ int dbook_sanitize_loc(char *from, DBOOK_ISBN *to){
 }
 
 int dbook_get_isbn_details_loc(DBOOK_ISBN *whichBook, dbook_book *book){
+
+    /*
+     * this initialize the library and check potential ABI mismatches
+     * between the version it was compiled for and the actual shared
+     * library used.
+     */
+    LIBXML_TEST_VERSION
+
+    char *booktest = "http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&Version=2005-03-23&Operation=ItemLookup&ContentType=text%2Fxml&SubscriptionId=0DK8EWAWVKXSH8SEMVR2&ItemId=067088703X&ResponseGroup=Medium"
+    /*parse the file and get the DOM */
+    doc = xmlReadFile(booktest, NULL, 0);
+
+    if (doc == NULL) {
+        printf("error: could not parse file %s\n", argv[1]);
+        return DBOOK_FALSE;
+    }
+
+    /*Get the root element node */
+    root_element = xmlDocGetRootElement(doc);
+
+    dbook_populate(root_element);
+
+    /*free the document */
+    xmlFreeDoc(doc);
+
+    /*
+     *Free the global variables that may
+     *have been allocated by the parser.
+     */
+    xmlCleanupParser();
+
     strcpy(book->isbn, "9780091906122");
     strcpy(book->title, "Are You a Geek?");
     strcpy(book->author, "Tim Collins");
