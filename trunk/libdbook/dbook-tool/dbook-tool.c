@@ -38,6 +38,9 @@ int main(int argc, char **argv) {
     char *isbn;
     int filter_ok;
 
+    /* in development, turn on debugging */
+    dbook_debug_flag = 0;
+
     opterr = 0;
 
     while ((c = getopt(argc, argv, "cdjko:sxy")) != -1) {
@@ -66,7 +69,6 @@ int main(int argc, char **argv) {
                  * filters
                  */
                 filter_ok = 0;
-                printf("optarg: %s\n", optarg);
                 if (strcmp(optarg, "plain") == 0) {
                     filter = DBT_FILTER_PLAIN;
                     filter_ok = 1;
@@ -173,6 +175,7 @@ void get_details(char *isbn) {
     dbook_book bk;
     char *out;
 
+    /* If no output filter set, choose plain as a safe default */
     if (filter == DBT_FILTER_NONE)
         filter = DBT_FILTER_PLAIN;
 

@@ -11,7 +11,17 @@
 #include "libdbook.h"
 
 /* externed in libdbook.h */
-char dbook_server[50];
+char    dbook_server[50];
+int     dbook_debug_flag = 0;
+int     dbook_errno = DBOOK_ERR_NONE;
+char    dbook_err_file[DBOOK_MAX_ERRFILE] = "";
+int     dbook_err_line = 0;
+
+char *dbook_err_descrs[] = {
+    NULL,
+    "Unknown error",
+    "Invalid ISBN"
+};
 
 int onlineMode = DBOOK_FALSE; /* XXX is this still needed? */
 
@@ -56,7 +66,7 @@ int dbook_sanitize(char *from, DBOOK_ISBN *to){
     return DBOOK_TRUE;
 }
 
-int dbook_get_isbn_details(DBOOK_ISBN *whichBook, dbook_book *book){
+int dbook_get_isbn_details(DBOOK_ISBN *whichBook, dbook_book *book) {
     if (onlineMode == DBOOK_FALSE){
         return dbook_get_isbn_details_loc(whichBook, book);
     } else {
@@ -115,4 +125,21 @@ char dbook_gen_chksum_13(DBOOK_ISBN *isbnToTest) {
     return DBOOK_FALSE;
 }
 
+/* print debug messages to stderror *if* dbook_debug_flag is set */
+void dbook_debug(char *msg) {
+    if (!dbook_debug_flag)
+        return;
 
+    fprintf(stderr, "DBOOK_DEBUG: %s\n", msg);
+}
+
+/* print an error message - only the library implementor uses this.
+ * ie. Dont print from within library functions. The return vals of 
+ * functions will inform the implementor that an error occured, not
+ * the library making noise on the console!
+ */
+void dbook_perror() {
+    fprintf(stderr, "DBOOK_ERROR %d\t(%s:%d):\n\t\t%s\n", dbook_errno,
+            dbook_err_file, dbook_err_line,
+            dbook_err_descrs[dbook_errno]);
+}

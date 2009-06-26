@@ -3,19 +3,20 @@
  * -----------------------
  * Does everything locally
  */
+
 /*
- * A lot was shamelessly copied from http://www.xmlsoft.org/examples/index.html#parse3.c
+ * A lot was shamelessly copied from:
+ * http://www.xmlsoft.org/examples/index.html#parse3.c
  * Thx to the author Dodji Seketeli
  */
 
-// For the XML stuff
+/* For the XML stuff */
 #include <stdio.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <strings.h>
-xmlDoc *doc = NULL;
 
-// And the rest
+/* And the rest */
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h> 
@@ -23,36 +24,46 @@ xmlDoc *doc = NULL;
 
 #define MAPLEN 3
 
-//For now only amazon is supported 
-char *amazonMap[MAPLEN] = {"Author",
-                           "Title", 
-                           "Publisher"
-};
+xmlDoc *doc = NULL;
+
+/* For now only amazon is supported */
+char *amazonMap[MAPLEN] = {"Author", "Title", "Publisher"};
 
 void dbook_populate(xmlNode * a_node, dbook_book *book) {
     xmlNode *cur_node = NULL;
 	xmlChar *key;
+    int i;
 
     for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
         if (cur_node->type == XML_ELEMENT_NODE) {
-            int i = 0;
             for (i =0; i < MAPLEN; i++){
-                if (xmlStrcmp((const xmlChar *)amazonMap[i], cur_node->name) == 0){
-                    //We have found something in the map
-                    //Check if the child is of type 
-                    if (cur_node->children->type == XML_TEXT_NODE){
-                        key = xmlNodeListGetString(doc, cur_node->xmlChildrenNode, 1);
-                        printf("Element: %s\n", cur_node->name);
-                        printf("Keyword: %s\n", key);
 
-                        if(strncasecmp(cur_node->name, "Author", sizeof(cur_node->name))){
-                            strncpy(book->author,key,sizeof(book->author));
-                        }else if (strcmp(cur_node->name, "Title"), sizeof(cur_node->name)){
+                if (xmlStrcmp((const xmlChar *) amazonMap[i],
+                    cur_node->name) == 0){
+
+                    /*
+                     * We have found something in the map.
+                     * Check if the child is of type 
+                     */
+
+                    if (cur_node->children->type == XML_TEXT_NODE){
+                        key = xmlNodeListGetString(doc,
+                                cur_node->xmlChildrenNode, 1);
+
+                        /* Match the fields we are interested in */
+                        if(strncasecmp(cur_node->name, "Author",
+                            sizeof(cur_node->name))){
+                            strncpy(book->author, key,
+                                sizeof(book->author));
+
+                        } else if (strcmp(cur_node->name, "Title"),
+                            sizeof(cur_node->name)) {
                             strncpy(book->title,key,sizeof(book->title));
                         }
+
                         xmlFree(key);
-                        //printf("%s\n", cur_node->children->name);
-                    }else{
+
+                    } else {
                         //return error;
                     }
                 }
@@ -128,48 +139,40 @@ char dbook_gen_chksum_13_loc(DBOOK_ISBN *isbnToTest) {
 }
 
 
-
+/*
+ * check an ISBN is valid
+ */
 int dbook_check_isbn_loc(DBOOK_ISBN *isbnToCheck){
 
     dbook_isbn isbnToTest = "";
-
-
     dbook_sanitize(isbnToCheck, isbnToTest);
 
     /* If the size is equal to 10 do it */
     if (dbook_is_isbn_10(isbnToTest) == DBOOK_TRUE) {
         int checkSum = dbook_gen_chksum_10(isbnToTest);
 
-        if (checkSum == 'X' && isbnToTest[9]=='X')
+        if (checkSum == 'X' && isbnToTest[9] == 'X')
             return DBOOK_TRUE;
 
         if (checkSum == (isbnToTest[9] - '0'))
             return DBOOK_TRUE;
 
-    }
-
-
     /* If the size is equal to 13 do it */
-    else if (dbook_is_isbn_13(isbnToTest) == DBOOK_TRUE) {
+    } else if (dbook_is_isbn_13(isbnToTest) == DBOOK_TRUE) {
 
         int checkSum = dbook_gen_chksum_13(isbnToTest);
 
         if (checkSum == (isbnToTest[12] - '0'))
             return DBOOK_TRUE;
-
     }
-
-    else {
-        fprintf(stderr,"It seams the ISBN passed in is neither a valid 10 or 13"); 
-    }
-
 
     /* If everything fails => fail */
     return DBOOK_FALSE;
 }
 
 int dbook_isbn_10_to_13_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
-    //Null everything before we do anything
+    char chkSum;
+
     memset(to, 0, strlen(to));
 
     if(dbook_is_isbn_10(from) != DBOOK_TRUE) {
@@ -186,20 +189,18 @@ int dbook_isbn_10_to_13_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
 
     dbook_sanitize(from, fromClean);
 
-    strncpy(to,"978",3);
+    strncpy(to, "978",3);
     strncat(to,fromClean,9);
-    char chkSum = dbook_gen_chksum_13(to) + '0';
+    chkSum = dbook_gen_chksum_13(to) + '0';
 
     strncat(to, &chkSum,1);
-
-
     return DBOOK_TRUE;
 }
 
 int dbook_isbn_13_to_10_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
-    //Null everything before we do anything
     memset(to, 0, strlen(to));
-    if(dbook_is_isbn_13(from) != DBOOK_TRUE) {
+
+    if (dbook_is_isbn_13(from) != DBOOK_TRUE) {
         fprintf(stderr, "When calling dbook_isbn_13_to_10 please pass in a 10 based isbn");
         return DBOOK_FALSE;
     }
@@ -251,43 +252,48 @@ int dbook_sanitize_loc(char *from, DBOOK_ISBN *to){
     return DBOOK_TRUE;
 }
 
-int dbook_get_isbn_details_loc(DBOOK_ISBN *whichBook, dbook_book *book){
-
-    memset(book,0,sizeof(dbook_book));
+/*
+ * Query amazon - get book details
+ */
+int dbook_get_isbn_details_loc(DBOOK_ISBN *isbn, dbook_book *book){
 
     xmlNode *root_element = NULL;
+    char *url_pre = "http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&Version=2005-03-23&Operation=ItemLookup&ContentType=text%2Fxml&SubscriptionId=0DK8EWAWVKXSH8SEMVR2&ItemId=";
+    char *url_post = "&ResponseGroup=Medium", *url;
+    int url_len = strlen(url_pre) + 13 + strlen(url_post);
+    int ret = DBOOK_TRUE;
 
-    /*
-     * this initialize the library and check potential ABI mismatches
-     * between the version it was compiled for and the actual shared
-     * library used.
-     */
+    /* setup libxml */
     LIBXML_TEST_VERSION
 
-    char *booktest = "http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&Version=2005-03-23&Operation=ItemLookup&ContentType=text%2Fxml&SubscriptionId=0DK8EWAWVKXSH8SEMVR2&ItemId=067088703X&ResponseGroup=Medium";
-    /*parse the file and get the DOM */
-    doc = xmlReadFile(booktest, NULL, 0);
+    /* Build the url */
+    url = (char *) malloc(url_len + 1);
+    snprintf(url, url_len + 1, "%s%s%s", url_pre, isbn, url_post);
+    dbook_debug("Amazon URL:");
+    dbook_debug(url);
+
+    /* parse the file and get the DOM */
+    doc = xmlReadFile(url, NULL, 0);
 
     if (doc == NULL) {
-        printf("error: could not parse file \n");
-        return DBOOK_FALSE;
+        /* do not skip freeing if failing */
+        ret = DBOOK_FALSE;
+        goto clean;
     }
 
-    /*Get the root element node */
+    /* Get the root element node */
     root_element = xmlDocGetRootElement(doc);
 
+    memset(book, 0, sizeof(dbook_book));
     dbook_populate(root_element, book);
 
-    /*free the document */
+clean:
+    /* clean up */
     xmlFreeDoc(doc);
-
-    /*
-     *Free the global variables that may
-     *have been allocated by the parser.
-     */
     xmlCleanupParser();
+    free(url);
 
-    return DBOOK_TRUE;
+    return ret;
 }
 
 
