@@ -2,7 +2,7 @@
  * DBOOK2
  * $Id$
  * -----------------------
- * The header file for the lib 
+ * The header file for libdbook2
  */
 
 #ifndef LIBDBOOK_H_
@@ -15,9 +15,23 @@
 #define DBOOK_ISBN_LEN 14
 #define DBOOK_ISBN char
 
-extern char dbook_server[50];
+/* Error Codes */
+#define DBOOK_ERR_NONE              0
+#define DBOOK_ERR_UNKNOWN           1
+#define DBOOK_ERR_INVALID_ISBN      2
+#define DBOOK_ERR_WRONG_ISBN_LEN    3
 
-typedef DBOOK_ISBN dbook_isbn[DBOOK_ISBN_LEN];
+#define DBOOK_MAX_ERRFILE  128
+#define DBOOK_SET_ERROR(e) dbook_errno = e; dbook_err_line = __LINE__; strncpy(dbook_err_file, __FILE__, DBOOK_MAX_ERRFILE);
+
+extern char dbook_server[50];
+extern int  dbook_debug_flag;
+extern int  dbook_errno;
+extern char dbook_err_file[];
+extern int  dbook_err_line;
+extern char *dbook_err_descrs[];
+
+typedef DBOOK_ISBN dbook_isbn[];
 
 typedef struct dbook_config_ {
     char server[50];
@@ -53,5 +67,7 @@ char dbook_gen_chksum_10(DBOOK_ISBN *isbnToTest);
 char dbook_gen_chksum_13(DBOOK_ISBN *isbnToTest);
 char *dbook_filter_book_plain(dbook_book *book);
 char *dbook_filter_book_bibtex(dbook_book *book);
+void dbook_debug(char *);
+void dbook_perror();
 
 #endif
