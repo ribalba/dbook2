@@ -1,6 +1,16 @@
+FIND_PACKAGE(LibXml2)
+
+# XXX proper -L/path/to/libs
+
+INCLUDE_DIRECTORIES(
+    "${CMAKE_INSTALL_PREFIX}/include"
+    "${LIBXML2_INCLUDE_DIR}"
+)
+
+
 ADD_EXECUTABLE(dbook-tool dbook-tool.c)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src) 
-TARGET_LINK_LIBRARIES(dbook-tool dbook)
+TARGET_LINK_LIBRARIES(dbook-tool dbook xml2)
 SET_TARGET_PROPERTIES(dbook-test PROPERTIES LINKER_LANGUAGE C)
 
 INSTALL(TARGETS dbook-tool

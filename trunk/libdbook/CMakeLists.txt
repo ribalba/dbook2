@@ -1,6 +1,8 @@
 # LIBDBOOK2 build system
 # $Id$
 
+cmake_minimum_required(VERSION 2.6)
+
 PROJECT(libdbook)
 
 # XXX not right, work out how to do properly
