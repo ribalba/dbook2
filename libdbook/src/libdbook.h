@@ -24,6 +24,14 @@
 #define DBOOK_MAX_ERRFILE  128
 #define DBOOK_SET_ERROR(e) dbook_errno = e; dbook_err_line = __LINE__; strncpy(dbook_err_file, __FILE__, DBOOK_MAX_ERRFILE);
 
+
+
+/* For the XML stuff */
+#include <stdio.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <strings.h>
+
 extern char dbook_server[50];
 extern int  dbook_debug_flag;
 extern int  dbook_errno;
@@ -69,5 +77,21 @@ char *dbook_filter_book_plain(dbook_book *book);
 char *dbook_filter_book_bibtex(dbook_book *book);
 void dbook_debug(char *);
 void dbook_perror();
+
+
+
+//Some local stuff for liblocaldbook
+
+void dbook_populate(xmlNode * a_node, dbook_book *book);
+char dbook_gen_chksum_10_loc(DBOOK_ISBN *isbnToTest);
+char dbook_gen_chksum_13_loc(DBOOK_ISBN *isbnToTest);
+int dbook_check_isbn_loc(DBOOK_ISBN *isbnToCheck);
+int dbook_isbn_10_to_13_loc(DBOOK_ISBN *from, DBOOK_ISBN *to);
+int dbook_isbn_13_to_10_loc(DBOOK_ISBN *from, DBOOK_ISBN *to);
+int dbook_sanitize_loc(char *from, DBOOK_ISBN *to);
+int dbook_get_isbn_details_loc(DBOOK_ISBN *isbn, dbook_book *book);
+int dbook_is_isbn_13_loc(DBOOK_ISBN *isbnToCheck);
+int dbook_is_isbn_10_loc(DBOOK_ISBN *isbnToCheck);
+
 
 #endif

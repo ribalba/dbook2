@@ -49,16 +49,13 @@ void dbook_populate(xmlNode * a_node, dbook_book *book) {
                     if (cur_node->children->type == XML_TEXT_NODE){
                         key = xmlNodeListGetString(doc,
                                 cur_node->xmlChildrenNode, 1);
-
+                        
                         /* Match the fields we are interested in */
-                        if(strncasecmp(cur_node->name, "Author",
-                            sizeof(cur_node->name))){
-                            strncpy(book->author, key,
-                                sizeof(book->author));
+                        if(strncasecmp(cur_node->name, "Author", sizeof(cur_node->name))){
+                            strncpy(book->author, key, sizeof(book->author));
 
-                        } else if (strcmp(cur_node->name, "Title"),
-                            sizeof(cur_node->name)) {
-                            strncpy(book->title,key,sizeof(book->title));
+                        } else if (strncasecmp(cur_node->name, "Title", sizeof(cur_node->name))) {
+                            strncpy(book->title, key,sizeof(book->author));
                         }
 
                         xmlFree(key);
