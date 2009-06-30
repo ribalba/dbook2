@@ -1,0 +1,14 @@
+dbook is a collection of programs to manage a large book collection.
+
+Features will include:
+ * ISBN checker (Done)
+ * ISBN Converter (Done)
+ * Amazon book information retrieval (35%)
+ * BibTeX output. (Done)
+ * Book database management system
+
+It consists out of libdbook with supplies all the necessary methods and different wrappers.
+
+Wrappers:
+ * Python
+ * Java  
