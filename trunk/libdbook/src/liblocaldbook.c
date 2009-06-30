@@ -292,7 +292,6 @@ clean:
     xmlFreeDoc(doc);
     xmlCleanupParser();
     free(url);
-
     return ret;
 }
 
