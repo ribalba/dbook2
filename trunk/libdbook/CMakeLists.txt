@@ -1,18 +1,27 @@
 # LIBDBOOK2 build system
 # $Id$
 
-cmake_minimum_required(VERSION 2.6)
+# XXX enable only when we know we require a certain version
+# CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT(libdbook)
 
-# XXX not right, work out how to do properly
 LINK_DIRECTORIES(
     "${CMAKE_INSTALL_PREFIX}/lib"
     "/usr/local/lib"
     "/usr/lib"
 )
 
+FIND_PACKAGE(LibXml2)
+
+INCLUDE_DIRECTORIES(
+    "${CMAKE_INSTALL_PREFIX}/include"
+    "${LIBXML2_INCLUDE_DIR}"
+)
+
+# XXX when you break the build system, set this
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
+
 SET(CMAKE_C_FLAGS -Wall)
 
 ADD_SUBDIRECTORY(src)
