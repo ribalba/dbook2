@@ -1,16 +1,7 @@
 # LIBDBOOK2 build system
 # $Id$
 
-FIND_PACKAGE(LibXml2)
-
-# XXX proper -L/path/to/libs
-
-INCLUDE_DIRECTORIES(
-    "${CMAKE_INSTALL_PREFIX}/include"
-    "${LIBXML2_INCLUDE_DIR}"
-)
-
-# libdistdbook is disabled in the build until someone fixes it
+# libdistdbook is disabled in the build until someone fixes it XXX
 OPTION(BUILD_SHARED_LIBS "turn OFF for .a libs" ON)
 ADD_LIBRARY(dbook libdbook liblocaldbook libdbook_filters) # libdistdbook
 TARGET_LINK_LIBRARIES(dbook xml2)
