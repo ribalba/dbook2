@@ -1,4 +1,4 @@
-# Description of the coding standards and good practices of libdbook.
+# Description of the coding standards and good practices of libdbook2.
 
 = Introduction =
 
