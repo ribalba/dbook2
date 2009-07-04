@@ -131,7 +131,7 @@ if ( a == 1 )  /* TOO SPACEY */
 
 == Comments ==
 
-Comments should be C89 compatible, do not use. Remember some of the more obsure architectures on some systems do not even support GCC3, and so need to be GCC2 compatible.
+Comments should be C89 compatible, do not use double slash C++ comments. Remember some of the more obsure architectures on some systems do not even support GCC3, and so need to be GCC2 compatible.
 
 == Standard Header ==
 
