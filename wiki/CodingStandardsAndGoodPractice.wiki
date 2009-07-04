@@ -182,7 +182,7 @@ DBOOK_ERROR 2 (/home/edd/dbook2/libdbook/dbook-tool/dbook-tool.c:145):
 
 == Debugging ==
 
-To print to stderr for debugging use 'void dbook_debug(char *msg)'. This function will only print *if* the global 'dbook_debug_flag' is set. It is up to the library implementer to set this. When releasing code, make sure debgging is *off*.
+To print to stderr for debugging use {{{void dbook_debug(char *msg)}}}. This function will only print *if* the global 'dbook_debug_flag' is set. It is up to the library implementer to set this. When releasing code, make sure debgging is *off*.
 
 == File Naming ==
 
