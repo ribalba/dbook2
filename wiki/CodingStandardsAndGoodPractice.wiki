@@ -135,7 +135,7 @@ Comments should be C89 compatible, do not use. Remember some of the more obsure 
 
 == Standard Header ==
 
-All C files in libdbook should have a header like this:
+All C files in the core library of libdbook2 should have a header like this:
 
 {{{
 /*
