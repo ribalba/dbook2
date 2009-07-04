@@ -1,4 +1,8 @@
-#The log
+#The log from the IRC channel that concieved dbook2.
+
+This is how libdbook2 was born. In the UNIX lab at Bournemouth Uni.
+
+= Log =
 
 {{{
 17:44 -!- didi [n=didi@194.66.66.187] has joined #bunix
