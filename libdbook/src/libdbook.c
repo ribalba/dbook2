@@ -18,11 +18,30 @@ char    dbook_err_file[DBOOK_MAX_ERRFILE] = "";
 int     dbook_err_line = 0;
 
 char *dbook_err_descrs[] = {
-    NULL,
+    "Not set",
     "Unknown error",
-    "Invalid ISBN"
+    "Invalid ISBN",
+    "Wrong ISBN len",
+    "Amazon error",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set",
+    "Not set"
 };
 
+/* TODO Shall we scrap the online mode ??? || PROBABLY (edd) */
 int onlineMode = DBOOK_FALSE; /* XXX is this still needed? */
 
 int dbook_check_isbn(DBOOK_ISBN *isbnToCheck) {
@@ -58,7 +77,7 @@ int dbook_isbn_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to) {
 
 int dbook_sanitize(char *from, DBOOK_ISBN *to){
     if (onlineMode == DBOOK_FALSE){
-        dbook_sanitize_loc(from, to);
+        return dbook_sanitize_loc(from, to);
     } else {
         /* dbook_sanitize_dis(from, to); */
     }
@@ -113,7 +132,7 @@ char dbook_gen_chksum_10(DBOOK_ISBN *isbnToTest) {
     } else {
         /* dbook_sanitize_dis(from, to); */
     }
-    return DBOOK_FALSE;
+    return 'E';
 }
 
 char dbook_gen_chksum_13(DBOOK_ISBN *isbnToTest) {
@@ -122,12 +141,12 @@ char dbook_gen_chksum_13(DBOOK_ISBN *isbnToTest) {
     } else {
         /* dbook_sanitize_dis(from, to); */
     }
-    return DBOOK_FALSE;
+    return 'E';
 }
 
 /* print debug messages to stderror *if* dbook_debug_flag is set */
 void dbook_debug(char *msg) {
-    if (!dbook_debug_flag)
+    if (dbook_debug_flag != DBOOK_TRUE)
         return;
 
     fprintf(stderr, "DBOOK_DEBUG: %s\n", msg);

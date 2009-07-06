@@ -22,24 +22,31 @@
 #include <ctype.h> 
 #include "libdbook.h"
 
-#define MAPLEN 3
-
+#define MAPLEN 6
 xmlDoc *doc = NULL;
 
 /* For now only amazon is supported */
-char *amazonMap[MAPLEN] = {"Author", "Title", "Publisher"};
 
-void dbook_populate(xmlNode * a_node, dbook_book *book) {
+int dbook_populate(xmlNode * a_node, dbook_book *book) {
+
+    char *amazonMap[MAPLEN][2] = {{"Author", book->author},
+                                  {"Title", book->title},
+                                  {"Publisher", book->publisher},
+                                  {"PublicationDate", book->date},
+                                  {"ISBN", book->isbn}};
+                                  //{"NumberOfPages", book->pagecount}};
+    
+    int ret = DBOOK_TRUE;
     xmlNode *cur_node = NULL;
-	xmlChar *key;
+    xmlChar *key;
     int i;
 
     for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
         if (cur_node->type == XML_ELEMENT_NODE) {
             for (i =0; i < MAPLEN; i++){
 
-                if (xmlStrcmp((const xmlChar *) amazonMap[i],
-                    cur_node->name) == 0){
+                if (xmlStrcmp((const xmlChar *) amazonMap[i][0],
+                            cur_node->name) == 0){
 
                     /*
                      * We have found something in the map.
@@ -51,24 +58,34 @@ void dbook_populate(xmlNode * a_node, dbook_book *book) {
                                 cur_node->xmlChildrenNode, 1);
                         
                         /* Match the fields we are interested in */
-                        if(strncasecmp(cur_node->name, "Author", sizeof(cur_node->name))){
-                            strncpy(book->author, key, sizeof(book->author));
-
-                        } else if (strncasecmp(cur_node->name, "Title", sizeof(cur_node->name))) {
-                            strncpy(book->title, key,sizeof(book->author));
+                        if(strncasecmp(cur_node->name, amazonMap[i][0], 
+                                    ( sizeof(char*) * strlen(cur_node->name)) ) == 0){
+                            strncpy(amazonMap[i][1], key, sizeof(char*)*strlen(key) );
                         }
 
                         xmlFree(key);
-
                     } else {
                         //return error;
                     }
+                } else if(xmlStrcmp((const xmlChar *) "Error", cur_node->name) == 0){
+                    //It seams like we have an error DBOOK_ERR_AMAZON_ERROR 
+                    key = xmlNodeListGetString(doc,
+                            cur_node->children->xmlChildrenNode, 1);
+
+                    fprintf(stderr, "Amazon: %s\n",key);
+                    xmlFree(key);
+                    DBOOK_SET_ERROR(DBOOK_ERR_AMAZON_ERROR);
+                    return DBOOK_ERR_AMAZON_ERROR;
                 }
             }
         }
 
-        dbook_populate(cur_node->children, book);
+
+        ret = dbook_populate(cur_node->children, book);
     }
+
+    //return DBOOK_TRUE;
+    return ret;
 }
 
 /** 
@@ -141,30 +158,42 @@ char dbook_gen_chksum_13_loc(DBOOK_ISBN *isbnToTest) {
  */
 int dbook_check_isbn_loc(DBOOK_ISBN *isbnToCheck){
 
-    dbook_isbn isbnToTest = "";
-    dbook_sanitize(isbnToCheck, isbnToTest);
-
+    int ret = DBOOK_FALSE;
+    int checksum;
+    DBOOK_ISBN *isbn = (DBOOK_ISBN *) malloc(DBOOK_ISBN_LEN);
+    dbook_sanitize(isbnToCheck, isbn);
+    
     /* If the size is equal to 10 do it */
-    if (dbook_is_isbn_10(isbnToTest) == DBOOK_TRUE) {
-        int checkSum = dbook_gen_chksum_10(isbnToTest);
+    if (dbook_is_isbn_10(isbn) == DBOOK_TRUE) {
+        checksum = dbook_gen_chksum_10(isbn);
 
-        if (checkSum == 'X' && isbnToTest[9] == 'X')
-            return DBOOK_TRUE;
+        if (checksum == 'X' && isbn[9] == 'X') {
+            ret = DBOOK_TRUE;
+            goto clean;
+        }
 
-        if (checkSum == (isbnToTest[9] - '0'))
-            return DBOOK_TRUE;
-
+        if (checksum == (isbn[9] - '0')) {
+            ret = DBOOK_TRUE;
+            goto clean;
+        }
     /* If the size is equal to 13 do it */
-    } else if (dbook_is_isbn_13(isbnToTest) == DBOOK_TRUE) {
+    } else if (dbook_is_isbn_13(isbn) == DBOOK_TRUE) {
 
-        int checkSum = dbook_gen_chksum_13(isbnToTest);
+        checksum = dbook_gen_chksum_13(isbn);
 
-        if (checkSum == (isbnToTest[12] - '0'))
-            return DBOOK_TRUE;
+        if (checksum == (isbn[12] - '0')) {
+            ret = DBOOK_TRUE;
+            goto clean;
+        }
+    }else{
+        ret = DBOOK_FALSE;
     }
 
+clean:
+    free(isbn);
+
     /* If everything fails => fail */
-    return DBOOK_FALSE;
+    return ret;
 }
 
 int dbook_isbn_10_to_13_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
@@ -237,15 +266,21 @@ int dbook_isbn_13_to_10_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
  * second is a dbook_isbn for the clean isbn to be put in
  */ 
 int dbook_sanitize_loc(char *from, DBOOK_ISBN *to){
-    //Null everything before we do anything
-    memset(to, 0, strlen(to));
+    int i,j = 0;
+
+    /* Null everything before we do anything */
+    memset(to, NULL, DBOOK_ISBN_LEN);
     
-    int i;
-    for (i = 0; i< strlen(from); i++){
-        if ( isdigit(from[i])  || from[i] == 'X' || from[i] == 'x'){
-            strncat(to, &from[i], 1);
+    for (i = 0; i < strlen(from); i++){
+        if (isdigit(from[i]) || from[i] == 'X' || from[i] == 'x') {
+            to[j] = from[i];
+            j ++;
         }
     }
+
+    /* terminate string */
+    to[j] = NULL; 
+
     return DBOOK_TRUE;
 }
 
@@ -253,11 +288,23 @@ int dbook_sanitize_loc(char *from, DBOOK_ISBN *to){
  * Query amazon - get book details
  */
 int dbook_get_isbn_details_loc(DBOOK_ISBN *isbn, dbook_book *book){
+   
+    DBOOK_ISBN *isbnClean = (DBOOK_ISBN *) malloc(DBOOK_ISBN_LEN);
+    dbook_sanitize(isbn, isbnClean);
+
+    //Before we do anything we should check that the ISBN is valid
+    if (dbook_check_isbn(isbnClean) != DBOOK_TRUE){
+        DBOOK_SET_ERROR(DBOOK_ERR_INVALID_ISBN);
+        return DBOOK_ERR_INVALID_ISBN;
+    }
+
 
     xmlNode *root_element = NULL;
     char *url_pre = "http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&Version=2005-03-23&Operation=ItemLookup&ContentType=text%2Fxml&SubscriptionId=0DK8EWAWVKXSH8SEMVR2&ItemId=";
     char *url_post = "&ResponseGroup=Medium", *url;
     int url_len = strlen(url_pre) + 13 + strlen(url_post);
+    
+    // The return value
     int ret = DBOOK_TRUE;
 
     /* setup libxml */
@@ -265,9 +312,9 @@ int dbook_get_isbn_details_loc(DBOOK_ISBN *isbn, dbook_book *book){
 
     /* Build the url */
     url = (char *) malloc(url_len + 1);
-    snprintf(url, url_len + 1, "%s%s%s", url_pre, isbn, url_post);
-    dbook_debug("Amazon URL:");
-    dbook_debug(url);
+    snprintf(url, url_len + 1, "%s%s%s", url_pre, isbnClean, url_post);
+    //dbook_debug("Amazon URL:");
+    //dbook_debug(url);
 
     /* parse the file and get the DOM */
     doc = xmlReadFile(url, NULL, 0);
@@ -282,13 +329,14 @@ int dbook_get_isbn_details_loc(DBOOK_ISBN *isbn, dbook_book *book){
     root_element = xmlDocGetRootElement(doc);
 
     memset(book, 0, sizeof(dbook_book));
-    dbook_populate(root_element, book);
+    ret = dbook_populate(root_element, book);
 
 clean:
     /* clean up */
     xmlFreeDoc(doc);
     xmlCleanupParser();
     free(url);
+    free(isbnClean);
     return ret;
 }
 
@@ -296,19 +344,38 @@ clean:
 /**
  * Checks if the isbn is a isbn 13. Does not validate only takes the length
  */
-int dbook_is_isbn_13_loc(DBOOK_ISBN *isbnToCheck){
-    dbook_isbn retVal = "";
-    dbook_sanitize(isbnToCheck, retVal);
-    return ((strlen(retVal) == 13) ? DBOOK_TRUE : DBOOK_FALSE) ;
+int dbook_is_isbn_13_loc(DBOOK_ISBN *isbn){
+    int ret = DBOOK_FALSE;
+
+    /* Allocate and zero buffer */
+    DBOOK_ISBN *sane = (DBOOK_ISBN *) malloc(DBOOK_ISBN_LEN);
+    memset(sane, NULL, DBOOK_ISBN_LEN);
+
+    dbook_sanitize(isbn, sane);
+
+    if (strlen(sane) == 13)
+        ret = DBOOK_TRUE;
+
+    free(sane);
+    return ret;
 }
 
 /**
  * Checks if the isbn is a isbn 10. Does not validate only takes the length
  */
-int dbook_is_isbn_10_loc(DBOOK_ISBN *isbnToCheck){
-    dbook_isbn retVal = "";
-    dbook_sanitize(isbnToCheck, retVal);
-    return ((strlen(retVal) == 10) ? DBOOK_TRUE : DBOOK_FALSE) ;
-}
+int dbook_is_isbn_10_loc(DBOOK_ISBN *isbn){
+    int ret = DBOOK_FALSE;
 
+    /* Allocate and zero buffer */
+    DBOOK_ISBN *sane = (DBOOK_ISBN *) malloc(DBOOK_ISBN_LEN);
+    memset(sane, NULL, DBOOK_ISBN_LEN);
+
+    dbook_sanitize(isbn, sane);
+
+    if (strlen(sane) == 10)
+        ret = DBOOK_TRUE;
+
+    free(sane);
+    return ret;
+}
 
