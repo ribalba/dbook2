@@ -1,8 +1,7 @@
 # LIBDBOOK2 build system
 # $Id$
 
-# XXX enable only when we know we require a certain version
-# CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 PROJECT(libdbook)
 

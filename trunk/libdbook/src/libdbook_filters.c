@@ -11,10 +11,22 @@
 #include "libdbook.h"
 
 char *dbook_filter_book_plain(dbook_book *bk) {
-    fprintf(stderr, "*err: plain filter not implemented, try bibtex.\n");
-    exit(EXIT_FAILURE);
+    char *ret = "";
+    
+    printf("Book data\n");
+    printf("ISBN: %s\n"       , bk->isbn);
+    printf("Title: %s\n"      , bk->title);
+    printf("Author: %s\n"     , bk->author);
+    printf("Date: %s\n"       , bk->date);
+    printf("Publisher: %s\n"  , bk->publisher);
+    printf("Edition: %d\n"    , bk->edition);
+    printf("Page count: %d\n" , bk->pagecount);
+    printf("Image: %s\n"      , bk->image_path);
+    printf("Category: %s\n"   , bk->category);
+    printf("Url: %s\n"        , bk->url);
+    printf("Book type: %s\n"  , bk->booktype);
 
-    return 0; /* XXX fixme */
+    return ret;
 }
 
 char *dbook_filter_book_bibtex(dbook_book *bk) {
@@ -81,7 +93,7 @@ char *dbook_filter_book_bibtex(dbook_book *bk) {
     ret = (char *) malloc(ret_sz) + 1;
     for (i = 0; i < btex_lines; i ++) {
         strncat(ret, lines[i], strlen(lines[i]));
-        free(lines[i]);
+        //free(lines[i]);
     }
 
     return ret;

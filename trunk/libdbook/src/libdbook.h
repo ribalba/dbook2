@@ -20,6 +20,7 @@
 #define DBOOK_ERR_UNKNOWN           1
 #define DBOOK_ERR_INVALID_ISBN      2
 #define DBOOK_ERR_WRONG_ISBN_LEN    3
+#define DBOOK_ERR_AMAZON_ERROR      4
 
 #define DBOOK_MAX_ERRFILE  128
 #define DBOOK_SET_ERROR(e) dbook_errno = e; dbook_err_line = __LINE__; strncpy(dbook_err_file, __FILE__, DBOOK_MAX_ERRFILE);
@@ -81,8 +82,10 @@ void dbook_perror();
 
 
 //Some local stuff for liblocaldbook
+//Should somehow represent the above only that there is a local at the end of 
+//every function
 
-void dbook_populate(xmlNode * a_node, dbook_book *book);
+int dbook_populate(xmlNode * a_node, dbook_book *book);
 char dbook_gen_chksum_10_loc(DBOOK_ISBN *isbnToTest);
 char dbook_gen_chksum_13_loc(DBOOK_ISBN *isbnToTest);
 int dbook_check_isbn_loc(DBOOK_ISBN *isbnToCheck);
