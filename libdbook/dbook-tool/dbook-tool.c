@@ -181,10 +181,10 @@ void get_details(char *isbn) {
     if (dbook_get_isbn_details(isbn, &bk) == DBOOK_TRUE) {
         switch (filter) {
             case DBT_FILTER_PLAIN:
-               // out = dbook_filter_book_plain(&bk);
+                out = dbook_filter_book_plain(&bk);
                 break;
             case DBT_FILTER_BIBTEX:
-               // out = dbook_filter_book_bibtex(&bk);
+                out = dbook_filter_book_bibtex(&bk);
                 break;
             default:
                 /* NOREACH */
@@ -192,7 +192,7 @@ void get_details(char *isbn) {
                 exit(EXIT_FAILURE);
                 break;
         }
-        //printf("%s\n", out);
+        printf("%s\n", out);
     } else {
         fprintf(stderr, "DBOOK_ERROR %d\t:\t%s\n", dbook_errno,
                 dbook_err_descrs[dbook_errno]);
