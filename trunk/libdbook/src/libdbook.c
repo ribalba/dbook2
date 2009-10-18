@@ -44,7 +44,7 @@ char *dbook_err_descrs[] = {
 /* TODO Shall we scrap the online mode ??? || PROBABLY (edd) */
 int onlineMode = DBOOK_FALSE; /* XXX is this still needed? */
 
-int dbook_check_isbn(DBOOK_ISBN *isbnToCheck) {
+int dbook_check_isbn(DBOOK_CHAR *isbnToCheck) {
     if (onlineMode == DBOOK_FALSE){
         return dbook_check_isbn_loc(isbnToCheck);
     } else {
@@ -54,7 +54,7 @@ int dbook_check_isbn(DBOOK_ISBN *isbnToCheck) {
     return DBOOK_FALSE;
 }
 
-int dbook_isbn_10_to_13(DBOOK_ISBN *from, DBOOK_ISBN *to) {
+int dbook_isbn_10_to_13(DBOOK_CHAR *from, DBOOK_CHAR *to) {
     if (onlineMode == DBOOK_FALSE) {
         return dbook_isbn_10_to_13_loc(from, to);
     } else {
@@ -65,7 +65,7 @@ int dbook_isbn_10_to_13(DBOOK_ISBN *from, DBOOK_ISBN *to) {
 
 }
 
-int dbook_isbn_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to) {
+int dbook_isbn_13_to_10(DBOOK_CHAR *from, DBOOK_CHAR *to) {
     if (onlineMode == DBOOK_FALSE) {
         return dbook_isbn_13_to_10_loc(from, to);
     } else {
@@ -75,7 +75,7 @@ int dbook_isbn_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to) {
     return DBOOK_FALSE;
 }
 
-int dbook_sanitize(char *from, DBOOK_ISBN *to){
+int dbook_sanitize(char *from, DBOOK_CHAR *to){
     if (onlineMode == DBOOK_FALSE){
         return dbook_sanitize_loc(from, to);
     } else {
@@ -85,7 +85,7 @@ int dbook_sanitize(char *from, DBOOK_ISBN *to){
     return DBOOK_TRUE;
 }
 
-int dbook_get_isbn_details(DBOOK_ISBN *whichBook, dbook_book *book) {
+int dbook_get_isbn_details(DBOOK_CHAR *whichBook, dbook_book *book) {
     if (onlineMode == DBOOK_FALSE){
         return dbook_get_isbn_details_loc(whichBook, book);
     } else {
@@ -107,7 +107,7 @@ int dbook_get_config(dbook_config *config){
 }
 
 
-int dbook_is_isbn_13(DBOOK_ISBN *isbnToCheck){
+int dbook_is_isbn_13(DBOOK_CHAR *isbnToCheck){
     if (onlineMode == DBOOK_FALSE){
         return dbook_is_isbn_13_loc(isbnToCheck);
     }else{
@@ -116,7 +116,7 @@ int dbook_is_isbn_13(DBOOK_ISBN *isbnToCheck){
     return DBOOK_FALSE;
 }
 
-int dbook_is_isbn_10(DBOOK_ISBN *isbnToCheck) {
+int dbook_is_isbn_10(DBOOK_CHAR *isbnToCheck) {
     if (onlineMode == DBOOK_FALSE) {
         return dbook_is_isbn_10_loc(isbnToCheck);
     } else {
@@ -125,7 +125,7 @@ int dbook_is_isbn_10(DBOOK_ISBN *isbnToCheck) {
     return DBOOK_FALSE;
 }
 
-char dbook_gen_chksum_10(DBOOK_ISBN *isbnToTest) {
+char dbook_gen_chksum_10(DBOOK_CHAR *isbnToTest) {
 
     if (onlineMode == DBOOK_FALSE) {
         return dbook_gen_chksum_10_loc(isbnToTest);
@@ -135,7 +135,7 @@ char dbook_gen_chksum_10(DBOOK_ISBN *isbnToTest) {
     return 'E';
 }
 
-char dbook_gen_chksum_13(DBOOK_ISBN *isbnToTest) {
+char dbook_gen_chksum_13(DBOOK_CHAR *isbnToTest) {
     if (onlineMode == DBOOK_FALSE) {
         return dbook_gen_chksum_13_loc(isbnToTest);
     } else {

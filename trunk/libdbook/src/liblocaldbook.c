@@ -91,7 +91,7 @@ int dbook_populate(xmlNode * a_node, dbook_book *book) {
 /** 
   * Returns the checksum for a ISBN 10 passed in as paramter
   */
-char dbook_gen_chksum_10_loc(DBOOK_ISBN *isbnToTest) {
+char dbook_gen_chksum_10_loc(DBOOK_CHAR *isbnToTest) {
 
     /*The multiplier */
     int multy = 10;
@@ -124,7 +124,7 @@ char dbook_gen_chksum_10_loc(DBOOK_ISBN *isbnToTest) {
 /** 
   Returns the checksum for a ISBN 13 passed in as paramter
   */
-char dbook_gen_chksum_13_loc(DBOOK_ISBN *isbnToTest) {
+char dbook_gen_chksum_13_loc(DBOOK_CHAR *isbnToTest) {
 
     /* The multiplyer */
     int multy = 10;
@@ -156,11 +156,11 @@ char dbook_gen_chksum_13_loc(DBOOK_ISBN *isbnToTest) {
 /*
  * check an ISBN is valid
  */
-int dbook_check_isbn_loc(DBOOK_ISBN *isbnToCheck){
+int dbook_check_isbn_loc(DBOOK_CHAR *isbnToCheck){
 
     int ret = DBOOK_FALSE;
     int checksum;
-    DBOOK_ISBN *isbn = (DBOOK_ISBN *) malloc(DBOOK_ISBN_LEN);
+    DBOOK_CHAR *isbn = (DBOOK_CHAR *) malloc(DBOOK_ISBN_LEN);
     dbook_sanitize(isbnToCheck, isbn);
     
     /* If the size is equal to 10 do it */
@@ -196,7 +196,7 @@ clean:
     return ret;
 }
 
-int dbook_isbn_10_to_13_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
+int dbook_isbn_10_to_13_loc(DBOOK_CHAR *from, DBOOK_CHAR *to){
     char chkSum;
 
     memset(to, 0, strlen(to));
@@ -223,7 +223,7 @@ int dbook_isbn_10_to_13_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
     return DBOOK_TRUE;
 }
 
-int dbook_isbn_13_to_10_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
+int dbook_isbn_13_to_10_loc(DBOOK_CHAR *from, DBOOK_CHAR *to){
     memset(to, 0, strlen(to));
 
     if (dbook_is_isbn_13(from) != DBOOK_TRUE) {
@@ -265,7 +265,7 @@ int dbook_isbn_13_to_10_loc(DBOOK_ISBN *from, DBOOK_ISBN *to){
  * first value is a char * to be cleaned
  * second is a dbook_isbn for the clean isbn to be put in
  */ 
-int dbook_sanitize_loc(char *from, DBOOK_ISBN *to){
+int dbook_sanitize_loc(char *from, DBOOK_CHAR *to){
     int i,j = 0;
 
     /* Null everything before we do anything */
@@ -287,9 +287,9 @@ int dbook_sanitize_loc(char *from, DBOOK_ISBN *to){
 /*
  * Query amazon - get book details
  */
-int dbook_get_isbn_details_loc(DBOOK_ISBN *isbn, dbook_book *book){
+int dbook_get_isbn_details_loc(DBOOK_CHAR *isbn, dbook_book *book){
    
-    DBOOK_ISBN *isbnClean = (DBOOK_ISBN *) malloc(DBOOK_ISBN_LEN);
+    DBOOK_CHAR *isbnClean = (DBOOK_CHAR *) malloc(DBOOK_ISBN_LEN);
     dbook_sanitize(isbn, isbnClean);
 
     //Before we do anything we should check that the ISBN is valid
@@ -344,11 +344,11 @@ clean:
 /**
  * Checks if the isbn is a isbn 13. Does not validate only takes the length
  */
-int dbook_is_isbn_13_loc(DBOOK_ISBN *isbn){
+int dbook_is_isbn_13_loc(DBOOK_CHAR *isbn){
     int ret = DBOOK_FALSE;
 
     /* Allocate and zero buffer */
-    DBOOK_ISBN *sane = (DBOOK_ISBN *) malloc(DBOOK_ISBN_LEN);
+    DBOOK_CHAR *sane = (DBOOK_CHAR *) malloc(DBOOK_ISBN_LEN);
     memset(sane, NULL, DBOOK_ISBN_LEN);
 
     dbook_sanitize(isbn, sane);
@@ -363,11 +363,11 @@ int dbook_is_isbn_13_loc(DBOOK_ISBN *isbn){
 /**
  * Checks if the isbn is a isbn 10. Does not validate only takes the length
  */
-int dbook_is_isbn_10_loc(DBOOK_ISBN *isbn){
+int dbook_is_isbn_10_loc(DBOOK_CHAR *isbn){
     int ret = DBOOK_FALSE;
 
     /* Allocate and zero buffer */
-    DBOOK_ISBN *sane = (DBOOK_ISBN *) malloc(DBOOK_ISBN_LEN);
+    DBOOK_CHAR *sane = (DBOOK_CHAR *) malloc(DBOOK_ISBN_LEN);
     memset(sane, NULL, DBOOK_ISBN_LEN);
 
     dbook_sanitize(isbn, sane);

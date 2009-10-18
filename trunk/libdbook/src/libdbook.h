@@ -2,7 +2,7 @@
  * DBOOK2
  * $Id$
  * -----------------------
- * The header file for libdbook2
+ * Type definitions, preprocessor macros and function prototypes.
  */
 
 #ifndef LIBDBOOK_H_
@@ -13,7 +13,7 @@
 
 /* 10 or 13 long plus \0 */
 #define DBOOK_ISBN_LEN 14
-#define DBOOK_ISBN char
+#define DBOOK_CHAR char
 
 /* Error Codes */
 #define DBOOK_ERR_NONE              0
@@ -40,7 +40,7 @@ extern char dbook_err_file[];
 extern int  dbook_err_line;
 extern char *dbook_err_descrs[];
 
-typedef DBOOK_ISBN dbook_isbn[];
+typedef DBOOK_CHAR dbook_isbn[];
 
 typedef struct dbook_config_ {
     char server[50];
@@ -50,7 +50,7 @@ typedef struct dbook_config_ {
 
 
 typedef struct dbook_book_ {
-    DBOOK_ISBN isbn[DBOOK_ISBN_LEN];
+    DBOOK_CHAR isbn[DBOOK_ISBN_LEN];
     char title[250];
     char author[250];
     char date[50];
@@ -63,17 +63,17 @@ typedef struct dbook_book_ {
     char booktype[50];
 } dbook_book;
 
-int dbook_check_isbn(DBOOK_ISBN *isbnToCheck);
-int dbook_isbn_10_to_13(DBOOK_ISBN *from, DBOOK_ISBN *to);
-int dbook_isbn_13_to_10(DBOOK_ISBN *from, DBOOK_ISBN *to);
-int dbook_sanitize(char *from, DBOOK_ISBN *to);
-int dbook_get_isbn_details(DBOOK_ISBN *whichBook, dbook_book *book);
+int dbook_check_isbn(DBOOK_CHAR *isbnToCheck);
+int dbook_isbn_10_to_13(DBOOK_CHAR *from, DBOOK_CHAR *to);
+int dbook_isbn_13_to_10(DBOOK_CHAR *from, DBOOK_CHAR *to);
+int dbook_sanitize(char *from, DBOOK_CHAR *to);
+int dbook_get_isbn_details(DBOOK_CHAR *whichBook, dbook_book *book);
 int dbook_configure(dbook_config *config);
 int dbook_get_config(dbook_config *config);
-int dbook_is_isbn_13(DBOOK_ISBN *isbnToCheck);
-int dbook_is_isbn_10(DBOOK_ISBN *isbnToCheck);
-char dbook_gen_chksum_10(DBOOK_ISBN *isbnToTest);
-char dbook_gen_chksum_13(DBOOK_ISBN *isbnToTest);
+int dbook_is_isbn_13(DBOOK_CHAR *isbnToCheck);
+int dbook_is_isbn_10(DBOOK_CHAR *isbnToCheck);
+char dbook_gen_chksum_10(DBOOK_CHAR *isbnToTest);
+char dbook_gen_chksum_13(DBOOK_CHAR *isbnToTest);
 char *dbook_filter_book_plain(dbook_book *book);
 char *dbook_filter_book_bibtex(dbook_book *book);
 void dbook_debug(char *);
@@ -86,15 +86,15 @@ void dbook_perror();
 //every function
 
 int dbook_populate(xmlNode * a_node, dbook_book *book);
-char dbook_gen_chksum_10_loc(DBOOK_ISBN *isbnToTest);
-char dbook_gen_chksum_13_loc(DBOOK_ISBN *isbnToTest);
-int dbook_check_isbn_loc(DBOOK_ISBN *isbnToCheck);
-int dbook_isbn_10_to_13_loc(DBOOK_ISBN *from, DBOOK_ISBN *to);
-int dbook_isbn_13_to_10_loc(DBOOK_ISBN *from, DBOOK_ISBN *to);
-int dbook_sanitize_loc(char *from, DBOOK_ISBN *to);
-int dbook_get_isbn_details_loc(DBOOK_ISBN *isbn, dbook_book *book);
-int dbook_is_isbn_13_loc(DBOOK_ISBN *isbnToCheck);
-int dbook_is_isbn_10_loc(DBOOK_ISBN *isbnToCheck);
+char dbook_gen_chksum_10_loc(DBOOK_CHAR *isbnToTest);
+char dbook_gen_chksum_13_loc(DBOOK_CHAR *isbnToTest);
+int dbook_check_isbn_loc(DBOOK_CHAR *isbnToCheck);
+int dbook_isbn_10_to_13_loc(DBOOK_CHAR *from, DBOOK_CHAR *to);
+int dbook_isbn_13_to_10_loc(DBOOK_CHAR *from, DBOOK_CHAR *to);
+int dbook_sanitize_loc(char *from, DBOOK_CHAR *to);
+int dbook_get_isbn_details_loc(DBOOK_CHAR *isbn, dbook_book *book);
+int dbook_is_isbn_13_loc(DBOOK_CHAR *isbnToCheck);
+int dbook_is_isbn_10_loc(DBOOK_CHAR *isbnToCheck);
 
 
 #endif
