@@ -2,13 +2,13 @@
  * DBOOK2
  * $Id: libdbook.c 60 2009-06-16 02:32:39Z vext01 $
  * -----------------------
- * 
+ * Output filers
  */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "libdbook.h"
+#include "dbook.h"
 
 char *dbook_filter_book_plain(dbook_book *bk) {
     char *ret = "";

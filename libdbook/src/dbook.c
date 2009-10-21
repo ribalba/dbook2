@@ -1,99 +1,156 @@
 /*
+ * DBOOK2
  * $Id$
  * -----------------------
- * Does everything locally
+ * 
  */
 
-/*
- * A lot was shamelessly copied from:
- * http://www.xmlsoft.org/examples/index.html#parse3.c
- * Thx to the author Dodji Seketeli
- */
-
-/* For the XML stuff */
 #include <stdio.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <strings.h>
-
-/* And the rest */
 #include <string.h>
-#include <stdio.h>
-#include <ctype.h> 
-#include "libdbook.h"
+#include <stdlib.h>
+#include <ctype.h>
+#include "dbook.h"
 
-#define MAPLEN 6
-xmlDoc *doc = NULL;
+/* externed in libdbook.h */
+int             dbook_debug_flag = 0;
+int             dbook_errno = DBOOK_ERR_NONE;
+char            dbook_err_file[DBOOK_MAX_ERRFILE] = "";
+int             dbook_err_line = 0;
+dbook_bkend     *dbook_bkend_list[DBOOK_MAX_BKENDS];
+int             dbook_bkends_in_use = 0;
 
-/* For now only amazon is supported */
+char *dbook_err_descrs[] = {
+    "No error",
+    "Unknown error",
+    "Invalid ISBN",
+    "Wrong ISBN len",
+    "Amazon error",
+    "Backend not set",
+    "Too many backends in use",
+    "libdbook not initialised, use dbook_initialise()",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented",
+    "Error code not implemented"
+};
 
-int dbook_populate(xmlNode * a_node, dbook_book *book) {
+/**
+ * Backend definitions
+ */
+//extern int amazon_get_isbn_details(DBOOK_CHAR *isbn, dbook_book *book);
+dbook_bkend dbook_bkend_amazon = {
+    "Amazon Lookup Service",
+    &dbook_amazon_get_isbn_details
+};
 
-    char *amazonMap[MAPLEN][2] = {{"Author", book->author},
-                                  {"Title", book->title},
-                                  {"Publisher", book->publisher},
-                                  {"PublicationDate", book->date},
-                                  {"ISBN", book->isbn}};
-                                  //{"NumberOfPages", book->pagecount}};
-    
-    int ret = DBOOK_TRUE;
-    xmlNode *cur_node = NULL;
-    xmlChar *key;
+/* A lookup table of available backends, indexes should match 
+ * DBOOK_BKEND_* definitions in dbook.h
+ * These are loaded in dbook_init();
+ * Can't be initialised here unfortunately.
+ */
+dbook_bkend *dbook_avail_bkends[DBOOK_MAX_BKENDS];
+
+int dbook_initialised = 0;
+
+/* set up the available backends and other initialisation */
+int dbook_initialise() {
     int i;
 
-    for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
-        if (cur_node->type == XML_ELEMENT_NODE) {
-            for (i =0; i < MAPLEN; i++){
+    dbook_avail_bkends[0] = &dbook_bkend_amazon;
 
-                if (xmlStrcmp((const xmlChar *) amazonMap[i][0],
-                            cur_node->name) == 0){
-
-                    /*
-                     * We have found something in the map.
-                     * Check if the child is of type 
-                     */
-
-                    if (cur_node->children->type == XML_TEXT_NODE){
-                        key = xmlNodeListGetString(doc,
-                                cur_node->xmlChildrenNode, 1);
-                        
-                        /* Match the fields we are interested in */
-                        if(strncasecmp(cur_node->name, amazonMap[i][0], 
-                                    ( sizeof(char*) * strlen(cur_node->name)) ) == 0){
-                            strncpy(amazonMap[i][1], key, sizeof(char*)*strlen(key) );
-                        }
-
-                        xmlFree(key);
-                    } else {
-                        //return error;
-                    }
-                } else if(xmlStrcmp((const xmlChar *) "Error", cur_node->name) == 0){
-                    //It seams like we have an error DBOOK_ERR_AMAZON_ERROR 
-                    key = xmlNodeListGetString(doc,
-                            cur_node->children->xmlChildrenNode, 1);
-
-                    fprintf(stderr, "Amazon: %s\n",key);
-                    xmlFree(key);
-                    DBOOK_SET_ERROR(DBOOK_ERR_AMAZON_ERROR);
-                    return DBOOK_ERR_AMAZON_ERROR;
-                }
-            }
-        }
-
-
-        ret = dbook_populate(cur_node->children, book);
+    /* fill unimplemented backends */
+    for (i = 1; i < DBOOK_MAX_BKENDS; i ++) {
+        dbook_avail_bkends[i] = NULL;
     }
 
-    //return DBOOK_TRUE;
-    return ret;
+    dbook_initialised = 1;
+
+    return DBOOK_TRUE;
+}
+
+/* call this at the start of all outward facing functions that need
+ * to use backends.
+ */
+int dbook_check_initialised() {
+    if (dbook_initialised) {
+        return DBOOK_TRUE;
+    }
+
+    DBOOK_SET_ERROR(DBOOK_ERR_UNINITIALISED);
+    return DBOOK_FALSE;
+}
+
+int dbook_get_isbn_details(DBOOK_CHAR *isbn, dbook_book *book) {
+
+    /* check dbook is initialised */
+    if (dbook_check_initialised() == DBOOK_FALSE)
+        return DBOOK_FALSE;
+
+    /* check atleast one backend was sleected */
+    if (dbook_bkends_in_use == 0) {
+        DBOOK_SET_ERROR(DBOOK_ERR_NO_BACKEND);
+        return DBOOK_FALSE;
+    }
+
+    /* for now we always use the first registered backend.
+     * This will change when we have further backends.
+     */
+    return dbook_bkend_list[0]->get_isbn_details_func(isbn, book);
+}
+
+int dbook_register_backend(int bk) {
+
+    /* check dbook is initialised */
+    if (dbook_check_initialised() == DBOOK_FALSE) {
+        return DBOOK_FALSE;
+    }
+
+    /* do we have space for another backend */
+    if (dbook_bkends_in_use == DBOOK_MAX_BKENDS) {
+        DBOOK_SET_ERROR(DBOOK_ERR_TOO_MANY_BKENDS);
+        return DBOOK_FALSE;
+    }
+
+    dbook_bkend_list[dbook_bkends_in_use] = dbook_avail_bkends[bk];
+    dbook_bkends_in_use ++;
+
+    return DBOOK_TRUE;
+}
+
+/* print debug messages to stderror *if* dbook_debug_flag is set */
+void dbook_debug(char *msg) {
+    if (dbook_debug_flag != DBOOK_TRUE)
+        return;
+
+    fprintf(stderr, "DBOOK_DEBUG: %s\n", msg);
+}
+
+/* print an error message - only the library implementor uses this.
+ * ie. Dont print from within library functions. The return vals of 
+ * functions will inform the implementor that an error occured, not
+ * the library making noise on the console!
+ */
+void dbook_perror() {
+    fprintf(stderr, "DBOOK_ERROR %d\t(%s:%d):\n\t\t%s\n", dbook_errno,
+            dbook_err_file, dbook_err_line,
+            dbook_err_descrs[dbook_errno]);
 }
 
 /** 
   * Returns the checksum for a ISBN 10 passed in as paramter
   */
-char dbook_gen_chksum_10_loc(DBOOK_CHAR *isbnToTest) {
+char dbook_gen_chksum_10(DBOOK_CHAR *isbnToTest) {
 
-    /*The multiplier */
+    /* The multiplier */
     int multy = 10;
     int sum = 0;
     int checkSum = 0;
@@ -124,7 +181,7 @@ char dbook_gen_chksum_10_loc(DBOOK_CHAR *isbnToTest) {
 /** 
   Returns the checksum for a ISBN 13 passed in as paramter
   */
-char dbook_gen_chksum_13_loc(DBOOK_CHAR *isbnToTest) {
+char dbook_gen_chksum_13(DBOOK_CHAR *isbnToTest) {
 
     /* The multiplyer */
     int multy = 10;
@@ -152,11 +209,10 @@ char dbook_gen_chksum_13_loc(DBOOK_CHAR *isbnToTest) {
 
 }
 
-
 /*
  * check an ISBN is valid
  */
-int dbook_check_isbn_loc(DBOOK_CHAR *isbnToCheck){
+int dbook_check_isbn(DBOOK_CHAR *isbnToCheck){
 
     int ret = DBOOK_FALSE;
     int checksum;
@@ -196,7 +252,7 @@ clean:
     return ret;
 }
 
-int dbook_isbn_10_to_13_loc(DBOOK_CHAR *from, DBOOK_CHAR *to){
+int dbook_isbn_10_to_13(DBOOK_CHAR *from, DBOOK_CHAR *to){
     char chkSum;
 
     memset(to, 0, strlen(to));
@@ -223,7 +279,7 @@ int dbook_isbn_10_to_13_loc(DBOOK_CHAR *from, DBOOK_CHAR *to){
     return DBOOK_TRUE;
 }
 
-int dbook_isbn_13_to_10_loc(DBOOK_CHAR *from, DBOOK_CHAR *to){
+int dbook_isbn_13_to_10(DBOOK_CHAR *from, DBOOK_CHAR *to){
     memset(to, 0, strlen(to));
 
     if (dbook_is_isbn_13(from) != DBOOK_TRUE) {
@@ -265,7 +321,7 @@ int dbook_isbn_13_to_10_loc(DBOOK_CHAR *from, DBOOK_CHAR *to){
  * first value is a char * to be cleaned
  * second is a dbook_isbn for the clean isbn to be put in
  */ 
-int dbook_sanitize_loc(char *from, DBOOK_CHAR *to){
+int dbook_sanitize(char *from, DBOOK_CHAR *to){
     int i,j = 0;
 
     /* Null everything before we do anything */
@@ -284,67 +340,10 @@ int dbook_sanitize_loc(char *from, DBOOK_CHAR *to){
     return DBOOK_TRUE;
 }
 
-/*
- * Query amazon - get book details
- */
-int dbook_get_isbn_details_loc(DBOOK_CHAR *isbn, dbook_book *book){
-   
-    DBOOK_CHAR *isbnClean = (DBOOK_CHAR *) malloc(DBOOK_ISBN_LEN);
-    dbook_sanitize(isbn, isbnClean);
-
-    //Before we do anything we should check that the ISBN is valid
-    if (dbook_check_isbn(isbnClean) != DBOOK_TRUE){
-        DBOOK_SET_ERROR(DBOOK_ERR_INVALID_ISBN);
-        return DBOOK_ERR_INVALID_ISBN;
-    }
-
-
-    xmlNode *root_element = NULL;
-    char *url_pre = "http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&Version=2005-03-23&Operation=ItemLookup&ContentType=text%2Fxml&SubscriptionId=0DK8EWAWVKXSH8SEMVR2&ItemId=";
-    char *url_post = "&ResponseGroup=Medium", *url;
-    int url_len = strlen(url_pre) + 13 + strlen(url_post);
-    
-    // The return value
-    int ret = DBOOK_TRUE;
-
-    /* setup libxml */
-    LIBXML_TEST_VERSION
-
-    /* Build the url */
-    url = (char *) malloc(url_len + 1);
-    snprintf(url, url_len + 1, "%s%s%s", url_pre, isbnClean, url_post);
-    //dbook_debug("Amazon URL:");
-    //dbook_debug(url);
-
-    /* parse the file and get the DOM */
-    doc = xmlReadFile(url, NULL, 0);
-
-    if (doc == NULL) {
-        /* do not skip freeing if failing */
-        ret = DBOOK_FALSE;
-        goto clean;
-    }
-
-    /* Get the root element node */
-    root_element = xmlDocGetRootElement(doc);
-
-    memset(book, 0, sizeof(dbook_book));
-    ret = dbook_populate(root_element, book);
-
-clean:
-    /* clean up */
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
-    free(url);
-    free(isbnClean);
-    return ret;
-}
-
-
 /**
  * Checks if the isbn is a isbn 13. Does not validate only takes the length
  */
-int dbook_is_isbn_13_loc(DBOOK_CHAR *isbn){
+int dbook_is_isbn_13(DBOOK_CHAR *isbn){
     int ret = DBOOK_FALSE;
 
     /* Allocate and zero buffer */
@@ -363,7 +362,7 @@ int dbook_is_isbn_13_loc(DBOOK_CHAR *isbn){
 /**
  * Checks if the isbn is a isbn 10. Does not validate only takes the length
  */
-int dbook_is_isbn_10_loc(DBOOK_CHAR *isbn){
+int dbook_is_isbn_10(DBOOK_CHAR *isbn){
     int ret = DBOOK_FALSE;
 
     /* Allocate and zero buffer */

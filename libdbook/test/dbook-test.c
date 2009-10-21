@@ -6,7 +6,7 @@
  */
 
 #include <stdio.h>
-#include <libdbook.h>
+#include <dbook.h>
 #include <string.h>
 
 int main(void) {
