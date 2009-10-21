@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <libdbook.h>
+#include <dbook.h>
 #include <string.h>
 
 #define DBT_MODE_NONE			0
@@ -40,6 +40,9 @@ int main(int argc, char **argv) {
 
     /* in development, turn on debugging */
     dbook_debug_flag = 0;
+
+    /* set up libdbook */
+    dbook_initialise();
 
     opterr = 0;
 
@@ -174,6 +177,9 @@ void set_mode(int n_mode) {
 void get_details(char *isbn) {
     dbook_book bk;
     char *out;
+
+    /* For now we only support the amazon backend */
+    dbook_register_backend(DBOOK_BKEND_AMAZON);
 
     /* If no output filter set, choose plain as a safe default */
     if (filter == DBT_FILTER_NONE)
