@@ -325,7 +325,7 @@ int dbook_sanitize(char *from, DBOOK_CHAR *to){
     int i,j = 0;
 
     /* Null everything before we do anything */
-    memset(to, NULL, DBOOK_ISBN_LEN);
+    memset((void *) to, 0, DBOOK_ISBN_LEN);
     
     for (i = 0; i < strlen(from); i++){
         if (isdigit(from[i]) || from[i] == 'X' || from[i] == 'x') {
@@ -335,7 +335,7 @@ int dbook_sanitize(char *from, DBOOK_CHAR *to){
     }
 
     /* terminate string */
-    to[j] = NULL; 
+    to[j] = '\0'; 
 
     return DBOOK_TRUE;
 }
@@ -348,7 +348,7 @@ int dbook_is_isbn_13(DBOOK_CHAR *isbn){
 
     /* Allocate and zero buffer */
     DBOOK_CHAR *sane = (DBOOK_CHAR *) malloc(DBOOK_ISBN_LEN);
-    memset(sane, NULL, DBOOK_ISBN_LEN);
+    memset((void *) sane, 0, DBOOK_ISBN_LEN);
 
     dbook_sanitize(isbn, sane);
 
@@ -367,7 +367,7 @@ int dbook_is_isbn_10(DBOOK_CHAR *isbn){
 
     /* Allocate and zero buffer */
     DBOOK_CHAR *sane = (DBOOK_CHAR *) malloc(DBOOK_ISBN_LEN);
-    memset(sane, NULL, DBOOK_ISBN_LEN);
+    memset((void *)sane, 0, DBOOK_ISBN_LEN);
 
     dbook_sanitize(isbn, sane);
 
