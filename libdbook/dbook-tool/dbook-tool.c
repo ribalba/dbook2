@@ -175,7 +175,7 @@ void set_mode(int n_mode) {
 }
 
 void get_details(char *isbn) {
-    dbook_book bk;
+    dbook_item bk;
     char *out;
 
     /* For now we only support the amazon backend */

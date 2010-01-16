@@ -90,7 +90,7 @@ int dbook_check_initialised() {
     return DBOOK_FALSE;
 }
 
-int dbook_get_isbn_details(DBOOK_CHAR *isbn, dbook_book *book) {
+int dbook_get_isbn_details(DBOOK_CHAR *isbn, dbook_item *book) {
 
     /* check dbook is initialised */
     if (dbook_check_initialised() == DBOOK_FALSE)
@@ -220,7 +220,7 @@ int dbook_check_isbn(DBOOK_CHAR *isbnToCheck){
 
     int ret = DBOOK_FALSE;
     int checksum;
-    DBOOK_CHAR *isbn = (DBOOK_CHAR *) malloc(DBOOK_ISBN_LEN);
+    DBOOK_CHAR *isbn = (DBOOK_CHAR *) malloc(DBOOK_MAX_ISBN);
     dbook_sanitize(isbnToCheck, isbn);
     
     /* If the size is equal to 10 do it */
@@ -331,7 +331,7 @@ int dbook_sanitize(char *from, DBOOK_CHAR *to){
     int i,j = 0;
 
     /* Null everything before we do anything */
-    memset((void *) to, 0, DBOOK_ISBN_LEN);
+    memset((void *) to, 0, DBOOK_MAX_ISBN);
     
     for (i = 0; i < strlen(from); i++){
         if (isdigit(from[i]) || from[i] == 'X' || from[i] == 'x') {
@@ -353,8 +353,8 @@ int dbook_is_isbn_13(DBOOK_CHAR *isbn){
     int ret = DBOOK_FALSE;
 
     /* Allocate and zero buffer */
-    DBOOK_CHAR *sane = (DBOOK_CHAR *) malloc(DBOOK_ISBN_LEN);
-    memset((void *) sane, 0, DBOOK_ISBN_LEN);
+    DBOOK_CHAR *sane = (DBOOK_CHAR *) malloc(DBOOK_MAX_ISBN);
+    memset((void *) sane, 0, DBOOK_MAX_ISBN);
 
     dbook_sanitize(isbn, sane);
 
@@ -372,8 +372,8 @@ int dbook_is_isbn_10(DBOOK_CHAR *isbn){
     int ret = DBOOK_FALSE;
 
     /* Allocate and zero buffer */
-    DBOOK_CHAR *sane = (DBOOK_CHAR *) malloc(DBOOK_ISBN_LEN);
-    memset((void *)sane, 0, DBOOK_ISBN_LEN);
+    DBOOK_CHAR *sane = (DBOOK_CHAR *) malloc(DBOOK_MAX_ISBN);
+    memset((void *)sane, 0, DBOOK_MAX_ISBN);
 
     dbook_sanitize(isbn, sane);
 

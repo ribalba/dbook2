@@ -21,6 +21,6 @@ xmlDoc *doc = NULL;
 /*
  * Query dbook.org - get book details
  */
-int dbook_org_get_isbn_details(DBOOK_CHAR *isbn, dbook_book *book) {
+int dbook_org_get_isbn_details(DBOOK_CHAR *isbn, dbook_item *book) {
 	return NULL; /* XXX placeholder */
 }

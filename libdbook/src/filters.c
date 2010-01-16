@@ -10,8 +10,9 @@
 #include <stdlib.h>
 #include "dbook.h"
 
-char *dbook_filter_book_plain(dbook_book *bk) {
-    char *ret = "";
+char *dbook_filter_book_plain(dbook_item *bk) {
+    /* 
+    char *ret = ""; <--- BAD who did this, naughty
     
     printf("Book data\n");
     printf("ISBN: %s\n"       , bk->isbn);
@@ -25,11 +26,15 @@ char *dbook_filter_book_plain(dbook_book *bk) {
     printf("Category: %s\n"   , bk->category);
     printf("Url: %s\n"        , bk->url);
     printf("Book type: %s\n"  , bk->booktype);
+    */
 
-    return ret;
+    /* XXX */
+    return NULL;
 }
 
-char *dbook_filter_book_bibtex(dbook_book *bk) {
+char *dbook_filter_book_bibtex(dbook_item *bk) {
+    /* XXX needs work */
+#if 0
     char *lines[9]; /* line 10 is always just a close brace */
     char *ret = "";
     int sz, ret_sz = 0;
@@ -97,4 +102,6 @@ char *dbook_filter_book_bibtex(dbook_book *bk) {
     }
 
     return ret;
+#endif
+    return NULL;
 }
