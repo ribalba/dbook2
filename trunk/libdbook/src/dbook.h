@@ -42,10 +42,11 @@ extern int  dbook_errno;
 extern char dbook_err_file[];
 extern int  dbook_err_line;
 extern char *dbook_err_descrs[];
-extern int             dbook_bkends_in_use;
+extern int  dbook_bkends_in_use;
 
 typedef DBOOK_CHAR dbook_isbn[];
 
+#define XXX
 typedef struct dbook_book_ {
     DBOOK_CHAR isbn[DBOOK_ISBN_LEN];
     char title[250];
