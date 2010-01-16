@@ -19,37 +19,37 @@ int             dbook_err_line = 0;
 dbook_bkend     *dbook_bkend_list[DBOOK_MAX_BKENDS];
 int             dbook_bkends_in_use = 0;
 
+#define DBOOK_ERR_NOT_IMPL "Error code not implemented"
 char *dbook_err_descrs[] = {
     "No error",
     "Unknown error",
     "Invalid ISBN",
     "Wrong ISBN len",
-    "Amazon error",
+    DBOOK_ERR_NOT_IMPL,
     "Backend not set",
     "Too many backends in use",
     "libdbook not initialised, use dbook_initialise()",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented",
-    "Error code not implemented"
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL,
+    DBOOK_ERR_NOT_IMPL
 };
 
 /**
  * Backend definitions
  */
-//extern int amazon_get_isbn_details(DBOOK_CHAR *isbn, dbook_book *book);
-dbook_bkend dbook_bkend_amazon = {
-    "Amazon Lookup Service",
-    &dbook_amazon_get_isbn_details
+dbook_bkend dbook_bkend_dbook_org = {
+    "Dbook.org Lookup Service",
+    &dbook_org_get_isbn_details
 };
 
 /* A lookup table of available backends, indexes should match 
@@ -65,7 +65,8 @@ int dbook_initialised = 0;
 int dbook_initialise() {
     int i;
 
-    dbook_avail_bkends[0] = &dbook_bkend_amazon;
+    /* for now, we only support our backend */
+    dbook_avail_bkends[0] = &dbook_bkend_dbook_org;
 
     /* fill unimplemented backends */
     for (i = 1; i < DBOOK_MAX_BKENDS; i ++) {
@@ -102,11 +103,14 @@ int dbook_get_isbn_details(DBOOK_CHAR *isbn, dbook_book *book) {
     }
 
     /* for now we always use the first registered backend.
-     * This will change when we have further backends.
+     * This will change when/if we have further backends.
      */
     return dbook_bkend_list[0]->get_isbn_details_func(isbn, book);
 }
 
+/*
+ * XXX this probably needs revision
+ */
 int dbook_register_backend(int bk) {
 
     /* check dbook is initialised */
@@ -252,11 +256,13 @@ clean:
     return ret;
 }
 
+/* XXX don't use camel case */
 int dbook_isbn_10_to_13(DBOOK_CHAR *from, DBOOK_CHAR *to){
     char chkSum;
 
     memset(to, 0, strlen(to));
 
+    /* XXX why is this printing, give it an errno and return that */
     if(dbook_is_isbn_10(from) != DBOOK_TRUE) {
         fprintf(stderr, "When calling dbook_isbn_10_to_13 please pass in a 10 based isbn");
         return DBOOK_FALSE;
