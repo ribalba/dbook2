@@ -20,7 +20,7 @@
 #define DBOOK_ERR_UNKNOWN           1
 #define DBOOK_ERR_INVALID_ISBN      2
 #define DBOOK_ERR_WRONG_ISBN_LEN    3
-#define DBOOK_ERR_AMAZON_ERROR      4
+/* #define DBOOK_ERR_AMAZON_ERROR      4 */
 #define DBOOK_ERR_NO_BACKEND        5
 #define DBOOK_ERR_TOO_MANY_BKENDS   6
 #define DBOOK_ERR_UNINITIALISED     7
@@ -101,7 +101,7 @@ char *dbook_filter_book_bibtex(dbook_book *book);
 void dbook_debug(char *);
 void dbook_perror();
 
-/* backend */
-int dbook_amazon_get_isbn_details(DBOOK_CHAR *isbn, dbook_book *book);
+/* dbook.org backend functions */
+int dbook_org_get_isbn_details(DBOOK_CHAR *isbn, dbook_book *book);
 
 #endif

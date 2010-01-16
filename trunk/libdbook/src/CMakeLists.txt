@@ -6,7 +6,7 @@ OPTION(BUILD_SHARED_LIBS "turn OFF for .a libs" ON)
 ADD_LIBRARY(dbook
     dbook.c
     filters.c
-    bkend_amazon.c
+    bkend_dbook_org.c
 )
 
 TARGET_LINK_LIBRARIES(dbook xml2)
