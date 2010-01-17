@@ -34,6 +34,8 @@ int dbook_org_get_item_details(DBOOK_CHAR *osbn, dbook_item *item) {
     /* make the url */
     strncat(url, osbn, DBOOK_MAX_URL);
     strncat(url, ".xml", DBOOK_MAX_URL);
+    dbook_debug("dbook.org URL is:");
+    dbook_debug(url);
 
     /* parse document */
     doc = xmlParseFile(url);
