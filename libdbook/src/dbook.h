@@ -47,7 +47,7 @@ extern int  dbook_err_line;
 extern char *dbook_err_descrs[];
 extern int  dbook_bkends_in_use;
 
-typedef DBOOK_CHAR dbook_isbn[];
+typedef DBOOK_CHAR dbook_isbn[DBOOK_MAX_ISBN];
 
 typedef struct dbook_item_ {
     DBOOK_CHAR  *type;
@@ -72,7 +72,7 @@ typedef struct dbook_item_ {
 
 typedef struct dbook_bkend_ {
     DBOOK_CHAR name[DBOOK_MAX_BKEND_NAME];
-    int (*get_isbn_details_func) (DBOOK_CHAR *, dbook_item *);
+    int (*get_item_details_func) (DBOOK_CHAR *, dbook_item *);
 } dbook_bkend;
 
 /* list of *registered* backends, like a nsswitch for dbook backends.
@@ -89,16 +89,18 @@ extern dbook_bkend *dbook_bkend_list[DBOOK_MAX_BKENDS];
 
 extern dbook_bkend *dbook_avail_bkends[DBOOK_MAX_BKENDS];
 
-/* various functions  */
-int dbook_check_isbn(DBOOK_CHAR *isbnToCheck);
+/* ISBN bits */
+int dbook_check_isbn(DBOOK_CHAR *isbn);
 int dbook_isbn_10_to_13(DBOOK_CHAR *from, DBOOK_CHAR *to);
 int dbook_isbn_13_to_10(DBOOK_CHAR *from, DBOOK_CHAR *to);
-int dbook_sanitize(char *from, DBOOK_CHAR *to);
-int dbook_get_isbn_details(DBOOK_CHAR *whichBook, dbook_item *book);
-int dbook_is_isbn_13(DBOOK_CHAR *isbnToCheck);
-int dbook_is_isbn_10(DBOOK_CHAR *isbnToCheck);
-char dbook_gen_chksum_10(DBOOK_CHAR *isbnToTest);
-char dbook_gen_chksum_13(DBOOK_CHAR *isbnToTest);
+int dbook_sanitize_isbn(DBOOK_CHAR *from, DBOOK_CHAR *to);
+int dbook_is_isbn_13(DBOOK_CHAR *isbn);
+int dbook_is_isbn_10(DBOOK_CHAR *isbn);
+char dbook_gen_isbn_chksum_10(DBOOK_CHAR *isbn);
+char dbook_gen_isbn_chksum_13(DBOOK_CHAR *isbn);
+
+/* various functions  */
+int dbook_get_item_details(DBOOK_CHAR *osbn, dbook_item *book);
 int dbook_register_backend(int bkend);
 int dbook_check_initialised();
 int dbook_initialise();
@@ -115,7 +117,7 @@ void dbook_debug(char *);
 void dbook_perror();
 
 /* dbook.org backend functions */
-int dbook_org_get_isbn_details(DBOOK_CHAR *isbn, dbook_item *book);
+int dbook_org_get_item_details(DBOOK_CHAR *isbn, dbook_item *book);
 int dbook_org_traverse(xmlNodePtr node, dbook_item *item);
 int dbook_org_assign_field(dbook_item *item, const xmlChar *last_elem,
     const xmlChar *content);

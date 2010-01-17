@@ -192,7 +192,7 @@ int get_details(char *isbn) {
     if (filter == DBT_FILTER_NONE)
         filter = DBT_FILTER_PLAIN;
 
-    ok = dbook_get_isbn_details(isbn, item);
+    ok = dbook_get_item_details(isbn, item);
     if (ok == DBOOK_TRUE) {
         switch (filter) {
             case DBT_FILTER_PLAIN:
