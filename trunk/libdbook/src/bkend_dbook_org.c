@@ -1,7 +1,7 @@
 /*
+ * DBOOK2
+ * dbook.org backend functions
  * $Id$
- * -----------------------
- * All dbook.org backend functions
  */
 
 /* For the XML stuff */

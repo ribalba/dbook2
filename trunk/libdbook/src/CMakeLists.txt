@@ -1,12 +1,12 @@
 # LIBDBOOK2 build system
 # $Id$
 
-# libdistdbook is disabled in the build until someone fixes it XXX
 OPTION(BUILD_SHARED_LIBS "turn OFF for .a libs" ON)
 ADD_LIBRARY(dbook
     dbook.c
     filters.c
     bkend_dbook_org.c
+    isbn_utils.c
 )
 
 TARGET_LINK_LIBRARIES(dbook xml2)

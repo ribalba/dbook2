@@ -1,8 +1,7 @@
 /*
  * DBOOK2
- * $Id$
- * -----------------------
  * dbook-tool cli frontend
+ * $Id$
  */
 
 #include <stdio.h>
