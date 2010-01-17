@@ -1,8 +1,7 @@
 /*
  * DBOOK2
- * $Id: libdbook.c 60 2009-06-16 02:32:39Z vext01 $
- * -----------------------
- * Output filers
+ * output filers
+ * $Id$
  */
 
 #include <stdio.h>

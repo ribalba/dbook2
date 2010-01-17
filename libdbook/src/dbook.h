@@ -1,8 +1,7 @@
 /*
  * DBOOK2
+ * type definitions, preprocessor macros and function prototypes.
  * $Id$
- * -----------------------
- * Type definitions, preprocessor macros and function prototypes.
  */
 
 #ifndef DBOOK_H_
