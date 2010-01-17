@@ -112,7 +112,7 @@ int dbook_isbn_10_to_13(DBOOK_CHAR *from, DBOOK_CHAR *to){
     char cksum;
     dbook_isbn from_clean = "";
 
-    memset(to, NULL, strlen(to));
+    memset(to, 0, strlen(to));
 
     if(dbook_is_isbn_10(from) != DBOOK_TRUE) {
         DBOOK_SET_ERROR(DBOOK_ERR_WRONG_ISBN_LEN);

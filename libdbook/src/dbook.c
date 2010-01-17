@@ -153,7 +153,7 @@ void *xmalloc(size_t sz) {
     void *ptr = malloc(sz);
 
     /* if this happens, expect a crash :( */
-    if (sz == NULL) {
+    if (ptr == NULL) {
         DBOOK_SET_ERROR(DBOOK_ERR_MALLOC);
         dbook_perror(); /* we print this *now* as it's quite fatal */
         return ptr;
@@ -165,7 +165,7 @@ void *xmalloc(size_t sz) {
 /* gives us a new NULLed dbook_item */
 dbook_item *dbook_new_item() {
     dbook_item *ret = xmalloc(sizeof(dbook_item));
-    memset(ret, NULL, sizeof(dbook_item));
+    memset(ret, 0, sizeof(dbook_item));
     return ret;
 }
 
