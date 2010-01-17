@@ -16,7 +16,6 @@
 #include <ctype.h> 
 #include "dbook.h"
 
-/* XXX config file for this */
 #define DBOOK_ORG_ADDRESS "http://dbook.org/"
 
 /* libxml stuff */
@@ -28,12 +27,12 @@ u_int8_t        content_assigned; /* crappy hack, better way? */
 /*
  * Query dbook.org - get book details
  */
-int dbook_org_get_isbn_details(DBOOK_CHAR *isbn, dbook_item *item) {
+int dbook_org_get_item_details(DBOOK_CHAR *osbn, dbook_item *item) {
     char    url[DBOOK_MAX_URL] = DBOOK_ORG_ADDRESS "ditems/";
     int     ok = DBOOK_TRUE;
 
     /* make the url */
-    strncat(url, isbn, DBOOK_MAX_URL);
+    strncat(url, osbn, DBOOK_MAX_URL);
     strncat(url, ".xml", DBOOK_MAX_URL);
 
     /* parse document */
@@ -77,10 +76,10 @@ int dbook_org_traverse(xmlNodePtr node, dbook_item *item) {
             dbook_org_traverse(n->children, item);
         } else if ((n->type == XML_TEXT_NODE) &&
             (n->parent->name == last_elem)) { /* dont use text not ours */
+
             if (!content_assigned) {
-                printf("%s = %s\n", last_elem, n->content);
-		dbook_org_assign_field(item, last_elem, n->content);
-                content_assigned = 1;
+                    dbook_org_assign_field(item, last_elem, n->content);
+                    content_assigned = 1;
             }
         }
     }
@@ -103,7 +102,8 @@ int dbook_org_assign_field(dbook_item *item, const xmlChar *last_elem,
     *target = xmalloc(strlen(content));
     strncpy(*target, (DBOOK_CHAR *) content, strlen(content));
 
-    printf(">>> %s\n", item->title);
+    dbook_debug("XML parser found:");
+    dbook_debug(item->title);
 
     return DBOOK_TRUE;
 }

@@ -46,10 +46,11 @@ char *dbook_err_descrs[] = {
 
 /**
  * Backend definitions
+ * Only one for now, but we hope to allow for future plugins.
  */
 dbook_bkend dbook_bkend_dbook_org = {
     "Dbook.org Lookup Service",
-    &dbook_org_get_isbn_details
+    &dbook_org_get_item_details
 };
 
 /* A lookup table of available backends, indexes should match 
@@ -90,7 +91,7 @@ int dbook_check_initialised() {
     return DBOOK_FALSE;
 }
 
-int dbook_get_isbn_details(DBOOK_CHAR *isbn, dbook_item *book) {
+int dbook_get_item_details(DBOOK_CHAR *osbn, dbook_item *item) {
 
     /* check dbook is initialised */
     if (dbook_check_initialised() == DBOOK_FALSE)
@@ -105,7 +106,7 @@ int dbook_get_isbn_details(DBOOK_CHAR *isbn, dbook_item *book) {
     /* for now we always use the first registered backend.
      * This will change when/if we have further backends.
      */
-    return dbook_bkend_list[0]->get_isbn_details_func(isbn, book);
+    return dbook_bkend_list[0]->get_item_details_func(osbn, item);
 }
 
 /*
@@ -152,12 +153,12 @@ void dbook_perror() {
 /** 
   * Returns the checksum for a ISBN 10 passed in as paramter
   */
-char dbook_gen_chksum_10(DBOOK_CHAR *isbnToTest) {
+char dbook_gen_isbn_chksum_10(DBOOK_CHAR *isbn) {
 
     /* The multiplier */
     int multy = 10;
     int sum = 0;
-    int checkSum = 0;
+    int cksum = 0;
     int i = 0, atoi_res;
 
     for (i = 0; i < 9; i++) {
@@ -165,158 +166,145 @@ char dbook_gen_chksum_10(DBOOK_CHAR *isbnToTest) {
          * shoot off into memory. So if you want to convert a single char 
          * into a int don't use atoi.
          */
-        atoi_res = isbnToTest[i] - '0';
+        atoi_res = isbn[i] - '0';
         sum = sum + (atoi_res * multy);
         multy --;
     }
 
-    checkSum = (11 - (sum % 11));
+    cksum = (11 - (sum % 11));
 
-    if (checkSum == 10)
+    if (cksum == 10)
         return 'X';
 
-    if (checkSum == 11)
+    if (cksum == 11)
         return 0;
 
-    return checkSum;
+    return cksum;
 }
 
 
 /** 
   Returns the checksum for a ISBN 13 passed in as paramter
   */
-char dbook_gen_chksum_13(DBOOK_CHAR *isbnToTest) {
+char dbook_gen_isbn_chksum_13(DBOOK_CHAR *isbn) {
 
     /* The multiplyer */
     int multy = 10;
     int sumodd = 0;
     int sumeve = 0;
-    int checkSum = 0;
+    int cksum = 0;
     int i = 0;
     int atoi1, atoi2;
 
     for (i = 0; i <= 11; i = i + 2) {
         /* Same as above */
-        atoi1 = isbnToTest[i] - '0';
-        atoi2 = isbnToTest[i + 1] - '0';
+        atoi1 = isbn[i] - '0';
+        atoi2 = isbn[i + 1] - '0';
 
         sumodd = sumodd + atoi1;
         sumeve = sumeve + atoi2;
     }
 
-    checkSum = (sumodd + (sumeve * 3)) % multy;
+    cksum = (sumodd + (sumeve * 3)) % multy;
 
-    if (checkSum != 0)
-        checkSum = multy - checkSum;
+    if (cksum != 0)
+        cksum = multy - cksum;
 
-    return checkSum;
+    return cksum;
 
 }
 
 /*
  * check an ISBN is valid
  */
-int dbook_check_isbn(DBOOK_CHAR *isbnToCheck){
+int dbook_check_isbn(DBOOK_CHAR *isbn){
+    int cksum;
+    DBOOK_CHAR new_isbn[DBOOK_MAX_ISBN];
 
-    int ret = DBOOK_FALSE;
-    int checksum;
-    DBOOK_CHAR *isbn = (DBOOK_CHAR *) xmalloc(DBOOK_MAX_ISBN);
-    dbook_sanitize(isbnToCheck, isbn);
+    dbook_sanitize_isbn(isbn, new_isbn);
     
     /* If the size is equal to 10 do it */
-    if (dbook_is_isbn_10(isbn) == DBOOK_TRUE) {
-        checksum = dbook_gen_chksum_10(isbn);
+    if (dbook_is_isbn_10(new_isbn) == DBOOK_TRUE) {
+        cksum = dbook_gen_isbn_chksum_10(isbn);
 
-        if (checksum == 'X' && isbn[9] == 'X') {
-            ret = DBOOK_TRUE;
-            goto clean;
+        if ((cksum == 'X') && (new_isbn[9] == 'X')) {
+            return DBOOK_TRUE;
         }
 
-        if (checksum == (isbn[9] - '0')) {
-            ret = DBOOK_TRUE;
-            goto clean;
+        if (cksum == (new_isbn[9] - '0')) {
+            return DBOOK_TRUE;
         }
+
     /* If the size is equal to 13 do it */
-    } else if (dbook_is_isbn_13(isbn) == DBOOK_TRUE) {
+    } else if (dbook_is_isbn_13(new_isbn) == DBOOK_TRUE) {
 
-        checksum = dbook_gen_chksum_13(isbn);
+        cksum = dbook_gen_isbn_chksum_13(new_isbn);
 
-        if (checksum == (isbn[12] - '0')) {
-            ret = DBOOK_TRUE;
-            goto clean;
+        if (cksum == (new_isbn[12] - '0')) {
+            return DBOOK_TRUE;
         }
-    }else{
-        ret = DBOOK_FALSE;
     }
 
-clean:
-    free(isbn);
-
-    /* If everything fails => fail */
-    return ret;
+    return DBOOK_FALSE;
 }
 
-/* XXX don't use camel case */
 int dbook_isbn_10_to_13(DBOOK_CHAR *from, DBOOK_CHAR *to){
-    char chkSum;
+    char cksum;
+    dbook_isbn from_clean = "";
 
-    memset(to, 0, strlen(to));
+    memset(to, NULL, strlen(to));
 
-    /* XXX why is this printing, give it an errno and return that */
     if(dbook_is_isbn_10(from) != DBOOK_TRUE) {
-        fprintf(stderr, "When calling dbook_isbn_10_to_13 please pass in a 10 based isbn");
+        DBOOK_SET_ERROR(DBOOK_ERR_WRONG_ISBN_LEN);
         return DBOOK_FALSE;
     }
 
     if (dbook_check_isbn(from) != DBOOK_TRUE){
-        fprintf(stderr, "Please pass in a valid isbn to dbook_isbn_10_to_13");
+        DBOOK_SET_ERROR(DBOOK_ERR_INVALID_ISBN);
         return DBOOK_FALSE;
     }
 
-    dbook_isbn fromClean = "";
+    dbook_sanitize_isbn(from, from_clean);
 
-    dbook_sanitize(from, fromClean);
+    strncpy(to, "978", 3);
+    strncat(to,from_clean, 9);
+    cksum = dbook_gen_isbn_chksum_13(to) + '0';
 
-    strncpy(to, "978",3);
-    strncat(to,fromClean,9);
-    chkSum = dbook_gen_chksum_13(to) + '0';
-
-    strncat(to, &chkSum,1);
+    strncat(to, &cksum,1);
     return DBOOK_TRUE;
 }
 
 int dbook_isbn_13_to_10(DBOOK_CHAR *from, DBOOK_CHAR *to){
+    dbook_isbn from_clean = "";
+    char cksum, cksum_deci;
+
     memset(to, 0, strlen(to));
 
     if (dbook_is_isbn_13(from) != DBOOK_TRUE) {
-        fprintf(stderr, "When calling dbook_isbn_13_to_10 please pass in a 10 based isbn");
+        DBOOK_SET_ERROR(DBOOK_ERR_WRONG_ISBN_LEN);
         return DBOOK_FALSE;
     }
 
     if (dbook_check_isbn(from) != DBOOK_TRUE){
-        fprintf(stderr, "Please pass in a valid isbn to dbook_isbn_13_to_10");
+        DBOOK_SET_ERROR(DBOOK_ERR_INVALID_ISBN);
         return DBOOK_FALSE;
     }
 
+    /* only ISBN13s beginning "978" can be converted */
     if (strncmp(from,"978",3) !=0) {
-        fprintf(stderr, "Only ISBN-13 numbers beginning with 978 can be converted to ISBN-10.");
+        DBOOK_SET_ERROR(DBOOK_ERR_INVALID_ISBN);
         return DBOOK_FALSE;
     }
-   
-    dbook_isbn fromClean = "";
 
-    dbook_sanitize(from, fromClean);
-
-
-    strncpy(to,fromClean+3,9);
+    dbook_sanitize_isbn(from, from_clean);
+    strncpy(to,from_clean + 3, 9);
+    cksum = dbook_gen_isbn_chksum_10(to);
     
-    char chkSum = dbook_gen_chksum_10(to);
-    
-    if (chkSum == 'X') {
-       strncat(to,"X",1);
+    if (cksum == 'X') {
+       strncat(to, "X", 1);
     } else {
-        char chkSumDeci = chkSum + '0' ;
-        strncat(to, &chkSumDeci,1);
+        cksum_deci = cksum + '0';
+        strncat(to, &cksum_deci, 1);
     }
 
     return DBOOK_TRUE;
@@ -324,10 +312,10 @@ int dbook_isbn_13_to_10(DBOOK_CHAR *from, DBOOK_CHAR *to){
 
 /**
  * Removes all the rubbish that is normally in an isbn like - and spaces
- * first value is a char * to be cleaned
- * second is a dbook_isbn for the clean isbn to be put in
+ * first value is a DBOOK_CHAR * to be cleaned *,  second is a dbook_isbn
+ * for the clean isbn to be put in.
  */ 
-int dbook_sanitize(char *from, DBOOK_CHAR *to){
+int dbook_sanitize_isbn(DBOOK_CHAR *from, DBOOK_CHAR *to){
     int i,j = 0;
 
     /* Null everything before we do anything */
@@ -350,38 +338,30 @@ int dbook_sanitize(char *from, DBOOK_CHAR *to){
  * Checks if the isbn is a isbn 13. Does not validate only takes the length
  */
 int dbook_is_isbn_13(DBOOK_CHAR *isbn){
-    int ret = DBOOK_FALSE;
+    DBOOK_CHAR sane[DBOOK_MAX_ISBN];
 
-    /* Allocate and zero buffer */
-    DBOOK_CHAR *sane = (DBOOK_CHAR *) xmalloc(DBOOK_MAX_ISBN);
     memset((void *) sane, 0, DBOOK_MAX_ISBN);
-
-    dbook_sanitize(isbn, sane);
+    dbook_sanitize_isbn(isbn, sane);
 
     if (strlen(sane) == 13)
-        ret = DBOOK_TRUE;
+        return(DBOOK_TRUE);
 
-    free(sane);
-    return ret;
+    return(DBOOK_FALSE);
 }
 
 /**
  * Checks if the isbn is a isbn 10. Does not validate only takes the length
  */
 int dbook_is_isbn_10(DBOOK_CHAR *isbn){
-    int ret = DBOOK_FALSE;
+    DBOOK_CHAR sane[DBOOK_MAX_ISBN];
 
-    /* Allocate and zero buffer */
-    DBOOK_CHAR *sane = (DBOOK_CHAR *) xmalloc(DBOOK_MAX_ISBN);
     memset((void *)sane, 0, DBOOK_MAX_ISBN);
-
-    dbook_sanitize(isbn, sane);
+    dbook_sanitize_isbn(isbn, sane);
 
     if (strlen(sane) == 10)
-        ret = DBOOK_TRUE;
+        return(DBOOK_TRUE);
 
-    free(sane);
-    return ret;
+    return(DBOOK_FALSE);
 }
 
 void *xmalloc(size_t sz) {
