@@ -61,22 +61,13 @@ int dbook_org_get_isbn_details(DBOOK_CHAR *isbn, dbook_item *item) {
     /* traverse tree caching fields as we find 'em */
     ok = dbook_org_traverse(cur_node, item);
 
+    xmlFreeDoc(doc);
+
 	return ok;
 }
 
 /* recursively parse the tree */
 int dbook_org_traverse(xmlNodePtr node, dbook_item *item) {
-
-#if 0
-    /* XXX assign to structs soon
-    xmlChar *val = xmlNodeListGetString(doc, cur_node, 1);
-
-    if (!xmlStrcmp(cur_node->name, (const xmlChar *) "title")) {
-        /* XXX free */
-        item->title = xmalloc(sizeof(val));
-        item->title = (char *) val;
-    }
-#endif
 
     xmlNodePtr n;
     for (n = node; n; n = n->next) {
@@ -84,13 +75,35 @@ int dbook_org_traverse(xmlNodePtr node, dbook_item *item) {
             last_elem = n->name;
             content_assigned = 0;
             dbook_org_traverse(n->children, item);
-        } else if (n->type == XML_TEXT_NODE) {
+        } else if ((n->type == XML_TEXT_NODE) &&
+            (n->parent->name == last_elem)) { /* dont use text not ours */
             if (!content_assigned) {
                 printf("%s = %s\n", last_elem, n->content);
+		dbook_org_assign_field(item, last_elem, n->content);
                 content_assigned = 1;
             }
         }
     }
+
+    return DBOOK_TRUE;
+}
+/* write a value into the struct */
+int dbook_org_assign_field(dbook_item *item, const xmlChar *last_elem,
+    const xmlChar *content) {
+
+    char **target;
+
+    if (!xmlStrcmp(last_elem, (const xmlChar *) "title")) {
+        target = &(item->title);
+    } else {
+        /* not a value we are interested in */
+        return DBOOK_FALSE;
+    }
+
+    *target = xmalloc(strlen(content));
+    strncpy(*target, (DBOOK_CHAR *) content, strlen(content));
+
+    printf(">>> %s\n", item->title);
 
     return DBOOK_TRUE;
 }
