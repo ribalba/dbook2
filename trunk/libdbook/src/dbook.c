@@ -1,4 +1,4 @@
-/*
+/*;
  * DBOOK2
  * $Id$
  * -----------------------
@@ -25,11 +25,11 @@ char *dbook_err_descrs[] = {
     "Unknown error",
     "Invalid ISBN",
     "Wrong ISBN len",
-    DBOOK_ERR_NOT_IMPL,
+    "XML parsing failure",
     "Backend not set",
     "Too many backends in use",
     "libdbook not initialised, use dbook_initialise()",
-    DBOOK_ERR_NOT_IMPL,
+    "Malloc failure",
     DBOOK_ERR_NOT_IMPL,
     DBOOK_ERR_NOT_IMPL,
     DBOOK_ERR_NOT_IMPL,
@@ -382,5 +382,18 @@ int dbook_is_isbn_10(DBOOK_CHAR *isbn){
 
     free(sane);
     return ret;
+}
+
+void *xmalloc(size_t sz) {
+    void *ptr = malloc(sz);
+
+    /* if this happens, expect a crash :( */
+    if (sz == NULL) {
+        DBOOK_SET_ERROR(DBOOK_ERR_MALLOC);
+        dbook_perror(); /* we print this *now* as it's quite fatal */
+        return ptr;
+    }
+
+    return ptr;
 }
 
