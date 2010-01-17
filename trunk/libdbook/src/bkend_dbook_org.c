@@ -101,8 +101,8 @@ int dbook_org_assign_field(dbook_item *item, const xmlChar *last_elem,
         return DBOOK_FALSE;
     }
 
-    *target = xmalloc(strlen(content));
-    strncpy(*target, (DBOOK_CHAR *) content, strlen(content));
+    *target = xmalloc(strlen((DBOOK_CHAR *) content));
+    strncpy(*target, (DBOOK_CHAR *) content, strlen((DBOOK_CHAR *) content));
 
     dbook_debug("XML parser found:");
     dbook_debug(item->title);
