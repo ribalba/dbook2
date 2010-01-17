@@ -26,7 +26,7 @@
 
 void usage();
 void set_mode(int);
-void get_details(char *);
+int  get_details(char *);
 void not_implemented(); /* XXX tmp */
 
 int mode = DBT_MODE_NONE;
@@ -34,7 +34,7 @@ int filter = DBT_FILTER_NONE;
 
 int main(int argc, char **argv) {
 
-    int c;
+    int c, ok = DBOOK_FALSE;
     char *isbn;
     int filter_ok;
 
@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
             not_implemented(); /* XXX */
             break;
         case DBT_MODE_GET_ISBN_DETAILS:
-            get_details(isbn);
+            ok = get_details(isbn);
             break;
         case DBT_MODE_IS_ISBN_10:
             not_implemented(); /* XXX */
@@ -143,7 +143,11 @@ int main(int argc, char **argv) {
             break;
     }
 
-    return EXIT_SUCCESS;
+    if (ok == DBOOK_FALSE){
+        dbook_perror();
+    }
+
+    return ok;
 }
 
 void usage() {
@@ -174,17 +178,20 @@ void set_mode(int n_mode) {
     mode = n_mode;
 }
 
-void get_details(char *isbn) {
+int get_details(char *isbn) {
     dbook_item bk;
     char *out;
+    int ok = DBOOK_FALSE;
 
-    /* For now we only support the amazon backend */
-    dbook_register_backend(DBOOK_BKEND_AMAZON);
+    /* For now we only support the dbook.org backend */
+    dbook_register_backend(DBOOK_BKEND_DBOOK_ORG);
 
     /* If no output filter set, choose plain as a safe default */
     if (filter == DBT_FILTER_NONE)
         filter = DBT_FILTER_PLAIN;
-    if (dbook_get_isbn_details(isbn, &bk) == DBOOK_TRUE) {
+
+    ok = dbook_get_isbn_details(isbn, &bk);
+    if (ok == DBOOK_TRUE) {
         switch (filter) {
             case DBT_FILTER_PLAIN:
                 out = dbook_filter_book_plain(&bk);
@@ -199,10 +206,9 @@ void get_details(char *isbn) {
                 break;
         }
         printf("%s\n", out);
-    } else {
-        fprintf(stderr, "DBOOK_ERROR %d\t:\t%s\n", dbook_errno,
-                dbook_err_descrs[dbook_errno]);
     }
+
+    return ok;
 }
 
 void not_implemented() {

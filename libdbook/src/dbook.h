@@ -20,16 +20,19 @@
 #define DBOOK_ERR_UNKNOWN           1
 #define DBOOK_ERR_INVALID_ISBN      2
 #define DBOOK_ERR_WRONG_ISBN_LEN    3
-/* #define DBOOK_ERR_AMAZON_ERROR      4 */
+#define DBOOK_ERR_XML_FAIL          4
 #define DBOOK_ERR_NO_BACKEND        5
 #define DBOOK_ERR_TOO_MANY_BKENDS   6
 #define DBOOK_ERR_UNINITIALISED     7
+#define DBOOK_ERR_MALLOC            8
 
 #define DBOOK_MAX_ERRFILE  128
 #define DBOOK_SET_ERROR(e) dbook_errno = e; dbook_err_line = __LINE__; strncpy(dbook_err_file, __FILE__, DBOOK_MAX_ERRFILE);
 
 #define DBOOK_MAX_BKEND_NAME    128
 #define DBOOK_MAX_BKENDS        8
+
+#define DBOOK_MAX_URL           256
 
 /* For the XML stuff */
 #include <stdio.h>
@@ -46,28 +49,25 @@ extern int  dbook_bkends_in_use;
 
 typedef DBOOK_CHAR dbook_isbn[];
 
-#define DBOOK_MAX_FIELD 256
 typedef struct dbook_item_ {
-    int type;
-    DBOOK_CHAR  author[DBOOK_MAX_FIELD];
-    DBOOK_CHAR  created[DBOOK_MAX_FIELD];
-    int         dtype;
-    int         edition;
-    DBOOK_CHAR  editor[DBOOK_MAX_FIELD];
-    u_int64_t   id;
-    DBOOK_CHAR  institution[DBOOK_MAX_FIELD];
-    DBOOK_CHAR  isbn[DBOOK_MAX_ISBN];
-    DBOOK_CHAR  journal[DBOOK_MAX_FIELD];
-    DBOOK_CHAR  note[DBOOK_MAX_FIELD];
-    DBOOK_CHAR  osbn[DBOOK_MAX_FIELD];
-    int         pages;
-    DBOOK_CHAR  pubdate[9]; /* DD-MM-YYYY\0 */
-    DBOOK_CHAR  publisher[DBOOK_MAX_FIELD];
-    /* XXX servies */
-    DBOOK_CHAR  source[DBOOK_MAX_FIELD];
-    DBOOK_CHAR  title[DBOOK_MAX_FIELD];
-    DBOOK_CHAR  modified[DBOOK_MAX_FIELD];
-    int         volume;
+    DBOOK_CHAR  *type;
+    DBOOK_CHAR  *author;
+    DBOOK_CHAR  *created;
+    DBOOK_CHAR  *dtype;
+    DBOOK_CHAR  *edition;
+    DBOOK_CHAR  *editor;
+    DBOOK_CHAR  *institution;
+    DBOOK_CHAR  *isbn;
+    DBOOK_CHAR  *journal;
+    DBOOK_CHAR  *note;
+    DBOOK_CHAR  *osbn;
+    DBOOK_CHAR  *pages;
+    DBOOK_CHAR  *pubdate;
+    DBOOK_CHAR  *publisher;
+    DBOOK_CHAR  *source;
+    DBOOK_CHAR  *title;
+    DBOOK_CHAR  *modified;
+    int         *volume;
 } dbook_item;
 
 typedef struct dbook_bkend_ {
@@ -84,7 +84,7 @@ extern dbook_bkend *dbook_bkend_list[DBOOK_MAX_BKENDS];
 /* unique identifiers for each backend. indexes
  * of the dbook_avail_bkends array in dbook.c
  */
-#define DBOOK_BKEND_AMAZON  0
+#define DBOOK_BKEND_DBOOK_ORG  0
 /* #define DBOOK_BKEND_DPROTO 1 */
 
 extern dbook_bkend *dbook_avail_bkends[DBOOK_MAX_BKENDS];
@@ -102,6 +102,7 @@ char dbook_gen_chksum_13(DBOOK_CHAR *isbnToTest);
 int dbook_register_backend(int bkend);
 int dbook_check_initialised();
 int dbook_initialise();
+void *xmalloc(size_t sz);
 
 /* output_filters (filters.c) */
 char *dbook_filter_book_plain(dbook_item *book);
@@ -113,5 +114,6 @@ void dbook_perror();
 
 /* dbook.org backend functions */
 int dbook_org_get_isbn_details(DBOOK_CHAR *isbn, dbook_item *book);
+int dbook_org_traverse(xmlNodePtr node, dbook_item *item);
 
 #endif
