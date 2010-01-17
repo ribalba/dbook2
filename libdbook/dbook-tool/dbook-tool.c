@@ -179,9 +179,11 @@ void set_mode(int n_mode) {
 }
 
 int get_details(char *isbn) {
-    dbook_item bk;
+    dbook_item *item;
     char *out;
     int ok = DBOOK_FALSE;
+
+    item = dbook_new_item();
 
     /* For now we only support the dbook.org backend */
     dbook_register_backend(DBOOK_BKEND_DBOOK_ORG);
@@ -190,14 +192,14 @@ int get_details(char *isbn) {
     if (filter == DBT_FILTER_NONE)
         filter = DBT_FILTER_PLAIN;
 
-    ok = dbook_get_isbn_details(isbn, &bk);
+    ok = dbook_get_isbn_details(isbn, item);
     if (ok == DBOOK_TRUE) {
         switch (filter) {
             case DBT_FILTER_PLAIN:
-                out = dbook_filter_book_plain(&bk);
+                out = dbook_filter_book_plain(item);
                 break;
             case DBT_FILTER_BIBTEX:
-                out = dbook_filter_book_bibtex(&bk);
+                out = dbook_filter_book_bibtex(item);
                 break;
             default:
                 /* NOREACH */
@@ -207,6 +209,8 @@ int get_details(char *isbn) {
         }
         printf("%s\n", out);
     }
+
+    dbook_free_item(item);
 
     return ok;
 }

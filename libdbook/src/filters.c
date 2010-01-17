@@ -11,24 +11,8 @@
 #include "dbook.h"
 
 char *dbook_filter_book_plain(dbook_item *bk) {
-    /* 
-    char *ret = ""; <--- BAD who did this, naughty
-    
-    printf("Book data\n");
-    printf("ISBN: %s\n"       , bk->isbn);
-    printf("Title: %s\n"      , bk->title);
-    printf("Author: %s\n"     , bk->author);
-    printf("Date: %s\n"       , bk->date);
-    printf("Publisher: %s\n"  , bk->publisher);
-    printf("Edition: %d\n"    , bk->edition);
-    printf("Page count: %d\n" , bk->pagecount);
-    printf("Image: %s\n"      , bk->image_path);
-    printf("Category: %s\n"   , bk->category);
-    printf("Url: %s\n"        , bk->url);
-    printf("Book type: %s\n"  , bk->booktype);
-    */
-
     /* XXX */
+
     return NULL;
 }
 

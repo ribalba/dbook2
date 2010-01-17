@@ -220,7 +220,7 @@ int dbook_check_isbn(DBOOK_CHAR *isbnToCheck){
 
     int ret = DBOOK_FALSE;
     int checksum;
-    DBOOK_CHAR *isbn = (DBOOK_CHAR *) malloc(DBOOK_MAX_ISBN);
+    DBOOK_CHAR *isbn = (DBOOK_CHAR *) xmalloc(DBOOK_MAX_ISBN);
     dbook_sanitize(isbnToCheck, isbn);
     
     /* If the size is equal to 10 do it */
@@ -353,7 +353,7 @@ int dbook_is_isbn_13(DBOOK_CHAR *isbn){
     int ret = DBOOK_FALSE;
 
     /* Allocate and zero buffer */
-    DBOOK_CHAR *sane = (DBOOK_CHAR *) malloc(DBOOK_MAX_ISBN);
+    DBOOK_CHAR *sane = (DBOOK_CHAR *) xmalloc(DBOOK_MAX_ISBN);
     memset((void *) sane, 0, DBOOK_MAX_ISBN);
 
     dbook_sanitize(isbn, sane);
@@ -372,7 +372,7 @@ int dbook_is_isbn_10(DBOOK_CHAR *isbn){
     int ret = DBOOK_FALSE;
 
     /* Allocate and zero buffer */
-    DBOOK_CHAR *sane = (DBOOK_CHAR *) malloc(DBOOK_MAX_ISBN);
+    DBOOK_CHAR *sane = (DBOOK_CHAR *) xmalloc(DBOOK_MAX_ISBN);
     memset((void *)sane, 0, DBOOK_MAX_ISBN);
 
     dbook_sanitize(isbn, sane);
@@ -397,3 +397,24 @@ void *xmalloc(size_t sz) {
     return ptr;
 }
 
+/* gives us a new NULLed dbook_item */
+dbook_item *dbook_new_item() {
+    dbook_item *ret = xmalloc(sizeof(dbook_item));
+    memset(ret, NULL, sizeof(dbook_item));
+    return ret;
+}
+
+/* free an item made by dbook_new_item() */
+void dbook_free_item (dbook_item *item) {
+    DBOOK_CHAR **i, *fields[] = {item->title, (DBOOK_CHAR *) NULL}; /* XXX */
+
+    /* loop fields freeing if they were allocated */
+    for (i = fields; *i != NULL; i ++) {
+        if (i != NULL) {
+            free(*i);
+        }
+    }
+
+    /* now free the struct itself */
+    free(item);
+}

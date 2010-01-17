@@ -103,6 +103,8 @@ int dbook_register_backend(int bkend);
 int dbook_check_initialised();
 int dbook_initialise();
 void *xmalloc(size_t sz);
+dbook_item *dbook_new_item();
+void dbook_free_item (dbook_item *item);
 
 /* output_filters (filters.c) */
 char *dbook_filter_book_plain(dbook_item *book);
@@ -115,5 +117,7 @@ void dbook_perror();
 /* dbook.org backend functions */
 int dbook_org_get_isbn_details(DBOOK_CHAR *isbn, dbook_item *book);
 int dbook_org_traverse(xmlNodePtr node, dbook_item *item);
+int dbook_org_assign_field(dbook_item *item, const xmlChar *last_elem,
+    const xmlChar *content);
 
 #endif
