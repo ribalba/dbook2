@@ -108,8 +108,8 @@ dbook_item *dbook_new_item();
 void dbook_free_item (dbook_item *item);
 
 /* output_filters (filters.c) */
-char *dbook_filter_book_plain(dbook_item *book);
-char *dbook_filter_book_bibtex(dbook_item *book);
+DBOOK_CHAR *dbook_filter_book_plain(dbook_item *item);
+DBOOK_CHAR *dbook_filter_book_bibtex(dbook_item *item);
 
 /* debugging bits */
 void dbook_debug(char *);
