@@ -94,8 +94,42 @@ int dbook_org_assign_field(dbook_item *item, const xmlChar *last_elem,
 
     char **target;
 
-    if (!xmlStrcmp(last_elem, (const xmlChar *) "title")) {
+    if (!xmlStrcmp(last_elem, (const xmlChar *) "type")) {
+        target = &(item->type);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "author")) {
+        target = &(item->author);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "created_at")) {
+        target = &(item->created_at);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "dtype")) {
+        target = &(item->dtype);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "edition")) {
+        target = &(item->edition);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "editor")) {
+        target = &(item->editor);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "institution")) {
+        target = &(item->institution);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "isbn")) {
+        target = &(item->isbn);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "journal")) {
+        target = &(item->journal);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "note")) {
+        target = &(item->note);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "osbn")) {
+        target = &(item->osbn);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "pages")) {
+        target = &(item->pages);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "pubdate")) {
+        target = &(item->pubdate);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "publisher")) {
+        target = &(item->publisher);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "source")) {
+        target = &(item->source);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "title")) {
         target = &(item->title);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "updated_at")) {
+        target = &(item->updated_at);
+    } else if (!xmlStrcmp(last_elem, (const xmlChar *) "volume")) {
+        target = &(item->volume);
     } else {
         /* not a value we are interested in */
         return DBOOK_FALSE;
@@ -105,7 +139,7 @@ int dbook_org_assign_field(dbook_item *item, const xmlChar *last_elem,
     strncpy(*target, (DBOOK_CHAR *) content, strlen((DBOOK_CHAR *) content));
 
     dbook_debug("XML parser found:");
-    dbook_debug(item->title);
+    dbook_debug(*target);
 
     return DBOOK_TRUE;
 }
