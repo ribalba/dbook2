@@ -51,7 +51,7 @@ typedef DBOOK_CHAR dbook_isbn[DBOOK_MAX_ISBN];
 typedef struct dbook_item_ {
     DBOOK_CHAR  *type;
     DBOOK_CHAR  *author;
-    DBOOK_CHAR  *created;
+    DBOOK_CHAR  *created_at;
     DBOOK_CHAR  *dtype;
     DBOOK_CHAR  *edition;
     DBOOK_CHAR  *editor;
@@ -65,8 +65,8 @@ typedef struct dbook_item_ {
     DBOOK_CHAR  *publisher;
     DBOOK_CHAR  *source;
     DBOOK_CHAR  *title;
-    DBOOK_CHAR  *modified;
-    int         *volume;
+    DBOOK_CHAR  *updated_at;
+    DBOOK_CHAR  *volume;
 } dbook_item;
 
 typedef struct dbook_bkend_ {
