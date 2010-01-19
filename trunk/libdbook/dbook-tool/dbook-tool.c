@@ -189,7 +189,7 @@ int get_details(char *isbn) {
 
     /* If no output filter set, choose plain as a safe default */
     if (filter == DBT_FILTER_NONE)
-        filter = DBT_FILTER_PLAIN;
+        filter = DBT_FILTER_BIBTEX;
 
     ok = dbook_get_item_details(isbn, item);
     if (ok == DBOOK_TRUE) {
